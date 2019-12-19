@@ -1,0 +1,70 @@
+.tags-input {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	padding: 0 10px;
+
+	.tag-input {
+		flex: 1;
+		border: none;
+		height: 46px;
+		font-size: 14px;
+		margin: 2px 10px 5px 10px;
+		padding: 4px 0 0 0;
+		&::placeholder {
+			@include font(15px);
+		}
+	}
+}
+
+.tags-field__disabled {
+	border: 0;
+	.tag-input {
+		display: none;
+	}
+	.tag-close-icon {
+		display: none;
+	}
+	&:hover {
+		box-shadow: none;
+	}
+}
+.tags-wrapper {
+	display: flex;
+	flex-wrap: wrap;
+	padding: 0;
+}
+
+.tag {
+	width: auto;
+	height: 95%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+
+	font-size: 14px;
+	list-style: none;
+	border-radius: 6px;
+	margin: 7px 8px;
+	padding: 8px 12px;
+	background: $green4;
+
+	&-close-icon {
+		@include font(13px);
+		text-transform: uppercase;
+		display: block;
+
+		text-align: center;
+
+		margin-left: 12px;
+		transition: .3;
+		color: white;
+
+		cursor: pointer;
+		&:hover {
+			color: $green1;
+			transition: .3;
+		}
+	}
+}

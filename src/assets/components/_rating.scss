@@ -1,0 +1,18 @@
+.rating{
+  
+  &__item{
+    width: 40%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+    margin-bottom: 25px;
+    &-title{
+      margin-right: 20px;
+
+    }
+    &-value{
+      color: $green4;
+    font-weight: 600;
+    }
+  }
+}

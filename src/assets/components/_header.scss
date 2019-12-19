@@ -1,0 +1,29 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid $green5;
+
+
+  &__user-site {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.user-name {
+  margin-right: 30px;
+  font-size: 17px;
+  color: $green5;
+  font-weight: 600;
+  transition: .3;
+  &:hover{
+    color: $green4; 
+    transition: .3;
+  }
+}
+

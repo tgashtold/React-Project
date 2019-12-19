@@ -1,0 +1,9 @@
+.textarea{
+resize: none;
+
+margin-top: 15px;
+&::placeholder{
+  @include font(15px);
+}
+}
+
