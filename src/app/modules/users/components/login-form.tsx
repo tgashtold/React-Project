@@ -1,29 +1,25 @@
 import React from 'react';
 import RoutesConfig from '../../../config/Routes.config';
-import ButtonLink from '../../../modules/common/components/button-link';
-import InputEmail from '../../../modules/common/components/input-email';
-import InputPassword from '../../../modules/common/components/input-password';
-import { IChangedEventArgs } from '../../../Utils/Interfaces';
+import {ButtonLink,Button, InputEmail, InputPassword} from '../../../modules/common';
+import { IChangedEventArgs } from '../../common';
 
-interface IMainPageProps {
+interface ILogInFormProps {
 	onSubmit: (email: string, password: string) => void;
 }
 
-interface IMainPageState {
-	isRegistered: boolean;
-}
+interface ILogInFormState {}
 
-class MainPage extends React.Component<IMainPageProps, IMainPageState | any> {
-	protected logInErrorMessage = '';
+
+export class LogInForm extends React.Component<ILogInFormProps, ILogInFormState | any> {
 	protected inputsNames = {
 		email: 'UserEmail',
 		password: 'UserPassword'
 	};
 
-	constructor(props: IMainPageProps) {
+	constructor(props: ILogInFormProps) {
 		super(props);
 		this.state = {
-			isRegistered: true,
+		
 			[this.inputsNames.email]: {},
 			[this.inputsNames.password]: {}
 		};
@@ -37,7 +33,9 @@ class MainPage extends React.Component<IMainPageProps, IMainPageState | any> {
 		return this.state[this.inputsNames.email].isValid && this.state[this.inputsNames.password].isValid;
 	}
 
-	handleLogInBtnClick = () => {
+	handleFormSubmit = (event: React.FormEvent) => {
+		event.preventDefault();
+
 		if (this.isFormValid()) {
 			this.props.onSubmit(this.state[this.inputsNames.email].value, this.state[this.inputsNames.password].value);
 		}
@@ -49,15 +47,13 @@ class MainPage extends React.Component<IMainPageProps, IMainPageState | any> {
 
 	render() {
 		return (
-			<form className="login__form" action="">
+			<form className="login__form" onSubmit={(e)=>this.handleFormSubmit((e))} action="">
 				<InputEmail name={this.inputsNames.email} onChanged={this.inputChangesHandler} />
 				<InputPassword name={this.inputsNames.password} onChanged={this.inputChangesHandler} />
 				{this.props.children}
 				<div className="buttons-wrapper">
-					<ButtonLink
-						buttonRoute={'#'}
-						clickHandler={this.handleLogInBtnClick}
-						disabled={this.isLoggedInBtnDisabled()}
+					<Button
+											disabled={this.isLoggedInBtnDisabled()}
 						buttonTitle={'Log In'}
 					/>
 					<ButtonLink buttonTitle={'Register'} buttonRoute={RoutesConfig.routes.registration} />
@@ -67,4 +63,4 @@ class MainPage extends React.Component<IMainPageProps, IMainPageState | any> {
 	}
 }
 
-export default MainPage;
+

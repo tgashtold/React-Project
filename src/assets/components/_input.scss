@@ -9,11 +9,11 @@
    width:100%;
    display:flex;
    flex-direction: column;
- 
+
  }
   transition: .3;
 &-approved{
-  background-color: $green1;
+  background-color: $green1 !important;
 }
 &::placeholder{
   font-size: 15px;

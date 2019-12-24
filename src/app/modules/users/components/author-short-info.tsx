@@ -1,21 +1,24 @@
 import React from 'react';
-import User from '../../../models/User';
+import {User} from '../../users';
+import {IUser} from '../../users/user.model';
 
 interface IAuthorShortInfonProps {
-	author: User;
+    author: User | IUser;
 }
 
-interface IAuthorShortInfoState {}
+interface IAuthorShortInfoState {
+}
 
-class AuthorShortInfo extends React.Component<IAuthorShortInfonProps, IAuthorShortInfoState> {
-	render() {
-		const author = this.props.author;
+export class AuthorShortInfo extends React.Component<IAuthorShortInfonProps, IAuthorShortInfoState> {
+    render() {
+        const author = this.props.author;
 
-		return (
-			<div className="author-info">
-				<span className="author-info__title">Author:</span>
-				<span className="author-info__value">{`${author.personalData.firstName} ${author.personalData.lastName}`}</span>
-				<span className="author-info__rating">
+        return (
+            <div className="author-info">
+                <span className="author-info__title">Author:</span>
+                <span
+                    className="author-info__value">{`${author.personalData.firstName} ${author.personalData.lastName}`}</span>
+                <span className="author-info__rating">
 					(rating
 					<span className="author-info__rating-part" title="number of created questions">
 						{author.rating.questionsTotal || 0}
@@ -30,9 +33,9 @@ class AuthorShortInfo extends React.Component<IAuthorShortInfonProps, IAuthorSho
 						{author.rating.answersAcceptedByOthers || 0}
 					</span>)
 				</span>
-			</div>
-		);
-	}
+            </div>
+        );
+    }
 }
 
-export default AuthorShortInfo;
+

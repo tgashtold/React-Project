@@ -3,7 +3,7 @@ import React from 'react';
 interface IUserInfoProps {}
 interface IUserInfoState {}
 
-class Error404 extends React.Component<IUserInfoProps, IUserInfoState> {
+export class Error404 extends React.Component<IUserInfoProps, IUserInfoState> {
 	render() {
 		return (
 			<div className="error">
@@ -13,4 +13,3 @@ class Error404 extends React.Component<IUserInfoProps, IUserInfoState> {
 	}
 }
 
-export default Error404;

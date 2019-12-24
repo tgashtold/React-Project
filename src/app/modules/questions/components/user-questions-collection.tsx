@@ -1,30 +1,36 @@
 import React from 'react';
-import QuestionTemplate from './question-template';
-import {IQuestionAnswersObj} from '../../../Utils/Interfaces'
-
+import {QuestionTemplate} from './question-template';
+import {IQuestionInfo} from '../question.model';
 
 
 interface IUserQuestionsCollectionProps {
-questionAnswersDetailsArr:Array<IQuestionAnswersObj>
+    userQuestions: Array<IQuestionInfo>
 }
 
-interface IUserQuestionsCollectionState {}
-
-class UserQuestionsCollection extends React.Component<IUserQuestionsCollectionProps, IUserQuestionsCollectionState> {
-	render() {
-		const questionsTemplatesCollection: Array<any> = this.props.questionAnswersDetailsArr.map((detailsArr: IQuestionAnswersObj) => (
-			<QuestionTemplate key={detailsArr.question.author.id} answersCount={detailsArr.answersNumber} latestAnswerTime={detailsArr.latestAnswerDate} question={detailsArr.question} />
-		));
-
-		return (
-			<div className="user-questions">
-				{questionsTemplatesCollection.length > 0
-				 	? questionsTemplatesCollection
-				 	: <p className="info-message">no questions</p>
-				 }
-			</div>
-		);
-	}
+interface IUserQuestionsCollectionState {
 }
 
-export default UserQuestionsCollection;
+
+export class UserQuestionsCollection extends React.Component<IUserQuestionsCollectionProps, IUserQuestionsCollectionState> {
+    getQuestionsTemplatesCollection = (): Array<any> => {
+        const questionsTemplatesCollection: Array<any> = this.props.userQuestions.map((question: IQuestionInfo) => (
+            <QuestionTemplate key={question.id}  question={question}/>
+        ));
+
+        return questionsTemplatesCollection;
+    };
+
+
+    render() {
+        return (
+            <div className="user-questions">
+                {this.props.userQuestions.length > 0
+                    ? this.getQuestionsTemplatesCollection()
+                    : <p className="info-message">no questions</p>
+                }
+            </div>
+        );
+    }
+}
+
+

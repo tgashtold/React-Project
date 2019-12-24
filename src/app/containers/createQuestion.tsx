@@ -1,140 +1,78 @@
 import React from 'react';
-import InputLabelWrapper from '../modules/common/components/input-label-wrapper';
-import TextArea from '../modules/common/components/textarea';
-import ButtonLink from '../modules/common/components/button-link';
-import User from '../models/User';
-import Question from '../models/Question';
-import Utils from '../Utils/Utils';
-import RouteService from '../services/route-service';
-import { UsersApi } from '../api/users.api';
-import { QuestionsApi } from '../api/questions.api';
+import { InputLabelWrapper, TextArea, Button, FormWrapper, IChangedEventArgs } from '../modules/common';
+import { Question, QuestionsApi, QuestionForm,  createQuestion } from '../modules/questions';
+import {IUser} from '../modules/users/user.model';
+import { connect } from 'react-redux';
+import {IQuestionCreationInfo} from '../modules/questions/question.worker';
 
-interface ICreateQuestionProps {}
+
+
+interface ICreateQuestionProps {
+		user: IUser;
+		createQuestion: (questionInfo: IQuestionCreationInfo)=> any;
+		isQuestionCreating: boolean;
+}
 
 interface ICreateQuestionState {
-	user: User;
-	isDescription: boolean;
-	isTitle: boolean;
-	questionTitle: string;
-	questionDescription: string;
-	model: Question;
 }
 
 class CreateQuestion extends React.Component<ICreateQuestionProps, ICreateQuestionState> {
-	protected errorMessageForRegisterBtn: string = '';
 
-	constructor(props: any) {
-		super(props);
-		this.state = {
-			user: new User(),
-			model: new Question(new User()),
-			isDescription: false,
-			isTitle: false,
-			questionTitle: '',
-			questionDescription: ''
-		};
-	}
-	componentWillMount = () => {
-		const registeredUserId = Utils.getUserIdFromLS();
+	handleQuestionFormSubmit = (questionTitle: string, questionDescription: string) => {
+		// const userToUpdate = this.props.user;
+		// userToUpdate.rating.questionsTotal += 1;
 
-		if (!registeredUserId) {
-			RouteService.redirectToErrorPage();
-		} else {
-			UsersApi.getUserById(registeredUserId).then((userFromDB: User) =>
-				this.setState({ user: userFromDB, model: new Question(userFromDB) })
-			);
-		}
-	};
+		// const newQuestion = new Question(userToUpdate);
 
-	isTitleEntered = (isTrue: boolean) => {
-		this.setState({ isTitle: isTrue });
-	};
+		// newQuestion.title = questionTitle;
+		// newQuestion.description = questionDescription;
+this.props.createQuestion({author:this.props.user, title: questionTitle, description: questionDescription});
 
-	isDescriptionEntered = (isTrue: boolean) => {
-		this.setState({ isDescription: isTrue });
-	};
+	//TODO:!!!!!!!!!!!!!!!!!!!!!
+// this.props.addAnswerToUserRating();
+		// QuestionsApi.addQuestion(newQuestion);
+		// UsersApi.changeUser(userToUpdate);
 
-	getEnteredDescription = (description: string) => {
-		this.setState({ questionDescription: description.trim() });
-	};
-	getEnteredTitle = (title: string) => {
-		this.setState({ questionTitle: title.trim() });
-	};
+		// this.setState({ user: userToUpdate });
 
-	areFieldsCorrectlyFilled = (): boolean => {
-		const areCorrectlyFilled = this.state.isTitle && this.state.isDescription;
 
-		return areCorrectlyFilled;
-	};
+        // RouteService.redirectToAnswersPage(this.props.question.id);
+ 	};
 
-	handleBtnClick = () => {
-		if (this.areFieldsCorrectlyFilled()) {
-			this.errorMessageForRegisterBtn = '';
 
-			const question: Question = this.state.model;
-
-			question.title = this.state.questionTitle;
-			question.description = this.state.questionDescription;
-
-			QuestionsApi.addQuestion(question);
-
-			this.setState({ model: question });
-
-			const questionAuthor: User = this.state.user;
-
-			questionAuthor.rating.questionsTotal = +1;
-
-			UsersApi.changeUser(questionAuthor);
-
-			this.setState({ user: questionAuthor });
-
-		} else {
-			this.errorMessageForRegisterBtn = 'Please fill in all the fields.';
-		}
-	};
+	// componentWillUpdate(nextProps: ICreateQuestionProps): boolean {
+	// 	if (nextProps.question){
+	// 	RouteService.redirectToAnswersPage(nextProps.question.id);}
+	// 	console.log(nextProps);
+	// return true;
+	// }
 
 	render() {
 		return (
-			<div className="registration-wrapper">
-				<h1 className="registration__head">Create a question</h1>
-				<form className="registration-form" action="">
-					<InputLabelWrapper isRequiredField={true} labelText={'Title'}>
-						<TextArea
-							isValid={this.isTitleEntered}
-							sendEnteredValue={this.getEnteredTitle}
-							specificaAreaClassName={'question-title'}
-							rowsQty={3}
-							maxLength={130}
-							placeholderValue={'Enter short question title'}
-						/>
-					</InputLabelWrapper>
-
-					<InputLabelWrapper isRequiredField={true} labelText={'Description'}>
-						<TextArea
-							sendEnteredValue={this.getEnteredDescription}
-							isValid={this.isDescriptionEntered}
-							specificaAreaClassName={'question-description'}
-							rowsQty={9}
-							maxLength={800}
-							placeholderValue={'Enter question details'}
-						/>
-					</InputLabelWrapper>
-					<span className="error-message">{this.errorMessageForRegisterBtn}</span>
-					<ButtonLink
-						clickHandler={this.handleBtnClick}
-						buttonTitle={'Create'}
-						buttonRoute={
-							this.areFieldsCorrectlyFilled() ? (
-								RouteService.getPathToAnswersPage(this.state.model.id)
-							) : (
-								'#'
-							)
-						}
-					/>
-				</form>
-			</div>
+			<FormWrapper formTitle={'Create a question'}>
+			{	this.props.isQuestionCreating ? <p className ="info-message">Creating question ...</p> : <QuestionForm onSubmit={this.handleQuestionFormSubmit} />}
+			</FormWrapper>
 		);
 	}
 }
 
-export default CreateQuestion;
+const mapStateToProps = (store: any) => {
+    return {
+			 user: store.user,
+			 isQuestionCreating: store.questions.isQuestionCreating,
+   
+   }}
+
+
+   const mapDispatchToProps = (dispatch: any) => {
+    return {
+    createQuestion: (questionInfo: IQuestionCreationInfo) =>dispatch(createQuestion.fetch(questionInfo)),
+   }}
+
+
+
+export const CreateQuestionPage = connect(mapStateToProps, mapDispatchToProps)(CreateQuestion);
+
+
+
+

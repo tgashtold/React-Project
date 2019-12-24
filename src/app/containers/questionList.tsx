@@ -1,59 +1,55 @@
 import React from 'react';
-import QuestionTemplate from '../modules/questions/components/question-template';
-import Question from '../models/Question';
-import { QuestionsApi } from '../api/questions.api';
-import { AnswersApi } from '../api/answers.api';
-import { IQuestionAnswersObj } from '../Utils/Interfaces';
+import { QuestionTemplate, getQuestions } from '../modules/questions';
+import { IQuestionInfo } from '../modules/questions/question.model';
+import { connect } from 'react-redux';
 
-
-interface IQuestionListProps {}
-
-interface IQuestionListState {
-questionsAndAnswersInfoArr: Array<IQuestionAnswersObj>,
+interface IQuestionsListProps {
+	questions: Array<IQuestionInfo>;
+	getQuestions: () => Array<IQuestionInfo>;
 }
 
-class QuestionList extends React.Component<IQuestionListProps, IQuestionListState> {
-	constructor(props: IQuestionListProps) {
-		super(props);
-		this.state = {
-			questionsAndAnswersInfoArr: [],
-				};
-	}
-	
+interface IQuestionsListState {}
+
+class QuestionsList extends React.Component<IQuestionsListProps, IQuestionsListState> {
 	componentWillMount() {
-		QuestionsApi.getQuestions()
-		.then((questions: Array<Question>) => {
-			AnswersApi.getQuestionAnswersInfoArr(
-				questions
-			).then((questionsAnswersObjArr: Array<IQuestionAnswersObj>) => {
-				this.setState({ questionsAndAnswersInfoArr: questionsAnswersObjArr });
-			});
-		})
-	
-	}
+        this.props.getQuestions();
+     }
 
+	getQuestionsTemplate = (): any => {
+		return this.props.questions.map((question: IQuestionInfo) => (
+			<QuestionTemplate
+				key={question.id}
+				question={question}
+				specificWrapperClass={'question-wrapper'}
+				specificLinkClass={'question__link'}
+				specificTitleClass={'question__title'}
+			/>
+		));
+	};
 	render() {
-
-
 		return (
 			<div className="questions">
 				<h1 className="questions__head">Questions List</h1>
-				{this.state.questionsAndAnswersInfoArr.map((questionAndAnswersInfo: IQuestionAnswersObj) => (
-					<QuestionTemplate
-					key={questionAndAnswersInfo.question.id}
-					question = {questionAndAnswersInfo.question}
-				answersCount={questionAndAnswersInfo.answersNumber}
-				latestAnswerTime={questionAndAnswersInfo.latestAnswerDate}
-						specificWrapperClass={'question-wrapper'}
-						specificLinkClass={'question__link'}
-						specificTitleClass={'question__title'}
-					/>
-				))}
+				{this.props.questions.length > 0 ? (
+					this.getQuestionsTemplate()
+				) : (
+					<p className="info-message">no questions</p>
+				)}
 			</div>
 		);
 	}
 }
 
-export default QuestionList;
+const mapStateToProps = (store: any) => {
+	return {
+		questions: store.questions.questions
+	};
+};
 
+const mapDispatchToProps = (dispatch: any) => {
+	return {
+		getQuestions: () => dispatch(getQuestions.fetch())
+	};
+};
 
+export const QuestionsListPage = connect(mapStateToProps, mapDispatchToProps)(QuestionsList);

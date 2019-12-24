@@ -1,36 +1,58 @@
 import React from 'react';
-import User from '../models/User';
-import RegistrationForm from '../modules/users/components/registration-form';
-import { UsersApi } from '../api/users.api';
-import { LSService } from '../services/LS-service';
+import {RegistrationForm, User, UsersApi, createUser} from '../modules/users';
+import {IUser} from '../modules/users/user.model';
+import {IPersonalInfo} from '../modules/users/user.model';
+import {LSService} from '../services/LS-service';
+import {FormWrapper} from '../modules/common';
+import {RouteService} from "../services";
+import { connect } from 'react-redux';
 
-interface IRegistrationProps {}
+
+interface IRegistrationProps {
+    user: IUser;
+    createUser: (password:string,personalInfo: IPersonalInfo)=> any
+}
+
 interface IRegistrationState {
-	model: User;
+    // user: IUser;
 }
 
 class Registration extends React.Component<IRegistrationProps, IRegistrationState> {
-	constructor(props: IRegistrationProps) {
-		super(props);
-		this.state = {
-			model: new User()
-		};
-	}
+    // constructor(props: IRegistrationProps) {
+    //     super(props);
+    //     this.state = {
+    //         user: this.props.user,
+    //     };
+    // }
 
-	handleFormSubmit = (user: User) => {
-		this.setState({ model: user });
-		UsersApi.addUser(user);
-		LSService.addUserIdToLS(user.id);
-	};
+    handleFormSubmit = (user:IUser) => {
+        // this.setState({user: user});
+               UsersApi.addUser(user as User);
+        // LSService.addUserIdToLS(user.id);
+        this.props.createUser(user.password, user.personalData);
+       alert(this.props.user.personalData.firstName);
+               RouteService.redirectToUserInfoPage(user.id);
+    };
 
-	render() {
-		return (
-			<div className="registration-wrapper">
-				<h1 className="registration__head">Registration form</h1>
-				<RegistrationForm onSubmit={this.handleFormSubmit} user={this.state.model} formBtnTitle={'Register'} />
-			</div>
-		);
-	}
+    render() {
+        return (
+            <FormWrapper formTitle={'Registration form'}>
+
+                <RegistrationForm onSubmit={this.handleFormSubmit} user={this.props.user} formBtnTitle={'Register'}/>
+            </FormWrapper>
+        );
+    }
 }
 
-export default Registration;
+const mapStateToProps = (store: any) => {
+    return {
+       user: store.user,
+   }}
+
+   const mapDispatchToProps = (dispatch: any) => {
+    return {
+       createUser: (password:string,personalInfo: IPersonalInfo) =>dispatch(createUser(password, personalInfo)),
+   }}
+const RegistrationPage = connect(mapStateToProps, mapDispatchToProps)(Registration);
+
+export default  RegistrationPage;

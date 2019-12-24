@@ -1,35 +1,27 @@
 import React from 'react';
-import User from '../../../models/User';
+import {User, UserRatingItem} from '../../../modules/users';
+
 
 interface IUserRatingProps {
-	user: User;
+    userRating: any;
 }
 
-interface IUserRatingState {}
-
-class UserRating extends React.Component<IUserRatingProps, IUserRatingState> {
-	render() {
-		return (
-			<div className="rating">
-				<div className="rating__item">
-					<span className="rating__item-title">My questions:</span>
-					<span className="rating__item-value">{this.props.user.rating.questionsTotal}</span>
-				</div>
-				<div className="rating__item">
-					<span className="rating__item-title">My answers:</span>
-					<span className="rating__item-value">{this.props.user.rating.answersTotal}</span>
-				</div>
-				<div className="rating__item">
-					<span className="rating__item-title">My answers liked by other users:</span>
-					<span className="rating__item-value">{this.props.user.rating.answersLikedByOthers}</span>
-				</div>
-				<div className="rating__item">
-					<span className="rating__item-title">My answers accepted by other users:</span>
-					<span className="rating__item-value">{this.props.user.rating.answersAcceptedByOthers}</span>
-				</div>
-			</div>
-		);
-	}
+interface IUserRatingState {
 }
 
-export default UserRating;
+export class UserRating extends React.Component<IUserRatingProps, IUserRatingState> {
+    render() {
+        return (
+            <div className="rating">
+                <UserRatingItem ratingItemTitle={'My questions'}
+                                ratingItemValue={this.props.userRating.questionsTotal}/>
+                <UserRatingItem ratingItemTitle={'My answers'} ratingItemValue={this.props.userRating.answersTotal}/>
+                <UserRatingItem ratingItemTitle={'My answers liked by other users'}
+                                ratingItemValue={this.props.userRating.answersLikedByOthers}/>
+                <UserRatingItem ratingItemTitle={'My answers accepted by other users'}
+                                ratingItemValue={this.props.userRating.answersAcceptedByOthers}/>
+            </div>
+        );
+    }
+}
+
