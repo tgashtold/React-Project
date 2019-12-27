@@ -1,30 +1,30 @@
 .user-questions {
-  margin-bottom: 40px;
+	margin-bottom: 40px;
 }
 
 .user-question {
-  &__description {
-    padding: 25px;
-    font-size: 15px;
-    color: $darkBlue;
-    transition: .3;
-    background-color: $grey;
-    margin-top: 10px;
-    border-radius: 7px;
-  }
+	&__description {
+		padding: 25px;
+		font-size: 15px;
+		color: $darkBlue;
+		transition: .3;
+		background-color: $grey;
+		margin-top: 10px;
+		border-radius: 7px;
+	}
 
-  &__link {
-    font-weight: 600;
+	&__link {
+		font-weight: 600;
 
-    &:hover {
-      color: $green4;
-      transition: .3;
-    }
-  }
+		&:hover {
+			color: $green4;
+			transition: .3;
+		}
+	}
 
-  &__wrapper {
-    padding: 10px 0;
-    display: flex;
-    flex-direction: column;
-  }
+	&__wrapper {
+		padding: 10px 0;
+		display: flex;
+		flex-direction: column;
+	}
 }

@@ -1,11 +1,16 @@
-export {QuestionTemplate} from './components/question-template';
-export {QuestionInfoItem} from './components/info-item';
-export {UserQuestionsCollection} from './components/user-questions-collection';
-export {QuestionForm} from './components/question-form';
-export {QuestionsApi} from './questions.api';
-export {questionsReducer} from './questions.reducer';
-export {closeQuestion,createQuestion,getQuestions,updateQuestion, updateQuestionAnswersInfo} from './question.action';
-export {Question} from './question.model';
-export {defaultQuestionState} from './questions.state';
-export {watchCloseQuestion,watchCreateQuestion,watchGetQuestions,watchUpdateQuestion,watchupdateQuestionAnswersInfo} from './question.watcher';
-
+export { QuestionTemplate } from './components/question-template';
+export { QuestionInfoItem } from './components/question-info-item';
+export { UserQuestionsCollection } from './components/user-questions-collection';
+export { QuestionForm } from './components/question-form';
+export { QuestionsApi } from './question.api';
+export { questionsReducer } from './question.reducer';
+export {
+	createQuestion,
+	getQuestions,
+	updateQuestion,
+	updateQuestionAnswersInfo,
+	allowToCreateQuestion,
+	forbidToCreateQuestion
+} from './question.action';
+export { defaultQuestionState } from './question.state';
+export { QuestionServices } from './question.services';

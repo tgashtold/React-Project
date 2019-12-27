@@ -1,81 +1,75 @@
-import React, {Fragment} from 'react';
-import {LSService} from '../services/LS-service';
-import {RouteService} from '../services';
-import {LogInForm, UsersApi, User, UserWelcomeMessage} from '../modules/users';
+import React, { Fragment } from 'react';
+import { LogInForm, UserWelcomeMessage, logInUser } from '../modules/users';
+import { IUserInfo, IUserLogInArgs } from '../modules/users/user.model';
 import { connect } from 'react-redux';
+import { IAppState } from '../state';
+import loader from '../../assets/images/loader.gif';
 
-
-
-interface IMainPageProps {
-    user: User;
+interface IMainPageStateProps {
+	user: IUserInfo | null;
+	isRegistered: boolean | null;
+	isDataLoading: boolean;
 }
 
-interface IMainPageState {
-    isRegistered: boolean;
-    user: User 
+interface IMainPageDispatchProps {
+	logInUser: (userLogInData: IUserLogInArgs) => any;
 }
 
-class MainPage extends React.Component<IMainPageProps, IMainPageState> {
-    constructor(props: IMainPageProps) {
-        super(props);
-        this.state = {
-            isRegistered: true,
-            user: this.props.user,
-        };
-    }
+interface IMainPageProps extends IMainPageDispatchProps, IMainPageStateProps {}
 
-    // componentWillMount = () => {
-    //     const userId = LSService.getUserIdFromLS();
-    //     if (userId) {
-    //         UsersApi.getUserById(userId).then((userFromDB: User) => this.setState({user: userFromDB}));
+interface IMainPageState {}
 
-    //     }
-    // };
-    handleSubmit = (email: string, password: string): void => {
-        UsersApi.getUserByEmailAndPassword(email, password).then((userToAllowAccess: User | undefined) => {
-            if (userToAllowAccess) {
+class HomePage extends React.Component<IMainPageProps, IMainPageState> {
+	handleSubmit = (userDataForLogIn: IUserLogInArgs): void => {
+		this.props.logInUser(userDataForLogIn);
+	};
 
-                LSService.addUserIdToLS(userToAllowAccess.id)
-                this.setState({isRegistered: true, user: userToAllowAccess});
-                RouteService.redirectToMainPage();
-            } else {
-                this.setState({isRegistered: false});
-            }
-        });
-    };
+	getUserWelcomeTemplate = (user: IUserInfo) => {
+		return (
+			<UserWelcomeMessage userFirstName={user.personalData.firstName} userLastName={user.personalData.lastName} />
+		);
+	};
 
-    getUserWelcomeTemplate = (user: User) => {
-        return (
-            <UserWelcomeMessage userFirstName={user.personalData.firstName} userLastName={user.personalData.lastName}/>
-        );
-    };
+	getLogInTemplate = () => {
+		return (
+			<Fragment>
+				<h1 className="login__title">log in</h1>
+				<LogInForm onSubmit={this.handleSubmit}>
+					{this.props.isRegistered === false 
+						? <p className="error-message">Please enter correct password and/or e-mail</p>
+						: null}
+				</LogInForm>
+			</Fragment>
+		);
+	};
 
-    getLigInTemplate = () => {
-        return (
-            <Fragment>
-                <h1 className="login__title">log in</h1>
-                <LogInForm onSubmit={this.handleSubmit}>
-                    {!this.state.isRegistered && (
-                        <p className="error-message">Please enter correct password and/or e-mail</p>
-                    )}
-                </LogInForm>
-            </Fragment>
-        )
-    };
-
-    render() {
-        return (
-            <div className="login-wrapper">
-                {this.state.user.password.length>0 ? this.getUserWelcomeTemplate(this.state.user) : this.getLigInTemplate()}
-            </div>
-        );
-    }
+	render() {
+		return (
+			<div className="login-wrapper">
+				{this.props.isDataLoading && <img src={loader} alt="Loading ..." />}
+				{this.props.isRegistered === true && this.props.user && !this.props.isDataLoading 
+					? this.getUserWelcomeTemplate(this.props.user)
+					:	this.getLogInTemplate()
+				}
+			</div>
+		);
+	}
 }
 
-const mapStateToProps = (store: any) => {
-     return {
-        user: store.user,
-    }}
-const mainPage = connect(mapStateToProps)(MainPage);
+const mapStateToProps = (state: IAppState): IMainPageStateProps => {
+	return {
+		user: state.user.user,
+		isRegistered: state.user.isRegistered,
+		isDataLoading: state.user.isUserCreating
+	};
+};
 
- export default  mainPage;
+const mapDispatchToProps = (dispatch: any): IMainPageDispatchProps => {
+	return {
+		logInUser: (userLogInData: IUserLogInArgs) => dispatch(logInUser.call(userLogInData))
+	};
+};
+
+export const MainPage = connect(mapStateToProps, mapDispatchToProps)(HomePage);
+
+export default MainPage;

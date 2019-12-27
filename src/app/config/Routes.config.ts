@@ -6,7 +6,7 @@ class RoutesConfig {
 		userInfo: '/user/:id',
 		createQuestion: '/question/create',
 		answers: '/question/:id',
-		error:'/error',
+		error: '/error'
 	};
 }
 

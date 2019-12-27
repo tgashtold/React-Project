@@ -1,145 +1,117 @@
 import React from 'react';
-import { Question, QuestionsApi, createQuestion} from '../modules/questions';
-import { IQuestion} from '../modules/questions/question.model';
-import { AuthorShortInfo, User, UsersApi, UserServices, addAnswerToUserRating, addLikedAnswerToUserRating,addAcceptedAnswerToUserRating } from '../modules/users';
-import { IUser } from '../modules/users/user.model';
+import { IQuestionInfo } from '../modules/questions/question.model';
+import { AuthorShortInfo, UserServices, increaseAnswersQtyInUserRating } from '../modules/users';
+import { IUserInfo } from '../modules/users/user.model';
 import { CreationDate } from '../modules/common';
-import { AnswerForm, AnswerListTemplate, Answer, AnswersApi, createAnswer, addAnswer } from '../modules/answers';
-import { IAnswer } from '../modules/answers/answer.model';
-import { LSService } from '../services/LS-service';
-import {RouteService} from '../services';
+import {
+	AnswerForm,
+	AnswerListTemplate,
+	createAnswer,
+	acceptAnswer,
+	addLikeToAnswer,
+	getQuestionAndAnswersByQuestionId
+} from '../modules/answers';
+import { IAddLikeArgs, IAnswer, IAnswerInfo } from '../modules/answers/answer.model';
+import { RouteService } from '../services';
 import { connect } from 'react-redux';
-import {IPersonalInfo, IUserRating} from '../modules/users/user.model';
+import { IAppState } from '../state';
+import { RouteComponentProps } from 'react-router-dom';
+import loader from '../../assets/images/loader.gif';
 
-interface IAnswersProps {
-	newAnswer: IAnswer;
-	user: IUser ;
-	question: Question;
-	answers: Array<Answer>;
-	createAnswer: (author: IUser, question: IQuestion, text: string)=>any;
-	addAnswerToUserRating:()=> any;
-	addAnswer: (answer: IAnswer)=> any;
-	
+interface IAnswersParams {
+	id: string;
 }
 
-interface IAnswersState {
-	isAnyAnswerAccepted: boolean;
-	// user: User | null;
-	// question: Question;
-	// answers: Array<Answer>;
+interface IAnswersStateProps {
+	user: IUserInfo | null;
+	currentQuestion: IQuestionInfo | null;
+	answers: Array<IAnswerInfo>;
+	isQuestionExist: boolean;
+	isDataLoading: boolean;
 }
 
-class Answers extends React.Component<IAnswersProps, IAnswersState> {
-	constructor(props: IAnswersProps) {
-		super(props);
+interface IAnswersDispatchProps {
+	createAnswer: (answer: IAnswer) => any;
+	acceptAnswer: (answerId: string) => any;
+	getQuestionAndAnswers: (questionId: string) => any;
+	addLikeToAnswer: (likeData: IAddLikeArgs) => any;
+	addAnswerToUserRating: (userId: string) => any;
+}
 
-		this.state = {
-			// user: null,
-			// question: new Question(new User()),
-			// answers: [],
-			isAnyAnswerAccepted: false
-		};
+interface IAnswersProps extends IAnswersDispatchProps, IAnswersStateProps {}
+
+interface IAnswersState {}
+
+class Answers extends React.Component<RouteComponentProps<IAnswersParams> & IAnswersProps, IAnswersState> {
+	componentWillMount() {
+		this.props.getQuestionAndAnswers(this.props.match.params.id);
 	}
 
-	// componentWillMount() {
-	// 	UsersApi.getUserById(LSService.getUserIdFromLS()).then((userFromDB: User) =>
-	// 		this.setState({ user: userFromDB })
-	// 	);
-
-	// 	QuestionsApi.getQuestionById(RouteService.getQuestionIdFromURl()).then((questionFromDB: Question) => {
-	// 		this.setState({ question: questionFromDB, isAnyAnswerAccepted: questionFromDB.isClosed });
-	// 		AnswersApi.getAnswersByQuestionId(questionFromDB.id).then((answersFromDB: Array<Answer>) => {
-	// 			this.setState({ answers: answersFromDB });
-	// 		});
-	// 	});
-
-	// 	}
-
-	handleLikesClick = (answer: Answer | IAnswer) => {
-		if (!UserServices.isUserLikedAnswer(this.props.user, answer)) {
-			const answerToUpdate: Answer = answer;
-			const newLikesNumber = answer.likes.quantity + 1;
-			answerToUpdate.likes.quantity = newLikesNumber;
-			answerToUpdate.author.rating.answersLikedByOthers += 1;
-			answerToUpdate.likes.users.push(this.props.user);
-			AnswersApi.changeAnswer(answerToUpdate);
-			UsersApi.changeUser(answerToUpdate.author);
-			const answersArr: Array<Answer> = this.props.answers;
-			const newAnswersArr: Array<Answer> = answersArr.filter((answer: Answer) => answer.id !== answerToUpdate.id);
-			newAnswersArr.push(answerToUpdate);
-			// this.setState({ answers: newAnswersArr });
+	handleLikeClick = (answer: IAnswerInfo) => {
+		if (this.props.user && !UserServices.isUserLikedAnswer(this.props.user, answer) && !UserServices.isUserAndAnswerAuthorEqual(this.props.user, answer)) {
+			this.props.addLikeToAnswer({ answerId: answer.id, user: this.props.user });
 		}
 	};
 
-	handleAcceptBtnClick = (answer: Answer) => {
-		const answerToUpdate: Answer = answer;
-		answerToUpdate.isAccepted = true;
-		answerToUpdate.author.rating.answersAcceptedByOthers += 1;
-		answerToUpdate.question.isClosed = true;
-
-		
-		const answersArr: Array<Answer> = this.props.answers;
-		const newAnswersArr: Array<Answer> = answersArr.filter((answer: Answer) => answer.id !== answerToUpdate.id);
-		newAnswersArr.push(answerToUpdate);
-
-		AnswersApi.changeAnswer(answerToUpdate);
-		UsersApi.changeUser(answerToUpdate.author);
-		this.setState({ isAnyAnswerAccepted: true });
-		// this.setState({ isAnyAnswerAccepted: true, answers: newAnswersArr });
+	handleAcceptBtnClick = (answer: IAnswerInfo) => {
+		this.props.acceptAnswer(answer.id);
 	};
 
-	handleAnswerFormSubmit = (answerText: string) => {
-		if (this.props.user.password.length>0) {
-this.props.addAnswerToUserRating();
-this.props.createAnswer(this.props.user, this.props.question, answerText);
-this.props.addAnswer(this.props.newAnswer)
-		
-			// answersArr.push(newAnswer);
-			// AnswersApi.addAnswer(newAnswer);
-			// UsersApi.changeUser(userToUpdate);
-			// this.setState({ user: userToUpdate, answers: answersArr });
+	handleAnswerFormSubmit = (answer: IAnswer) => {
+		if (this.props.user && this.props.currentQuestion) {
+			this.props.createAnswer({ ...answer, author: this.props.user, question: this.props.currentQuestion });
+			this.props.addAnswerToUserRating(this.props.user.id);
 		}
 	};
 
 	render() {
+		!this.props.isQuestionExist && RouteService.redirectToErrorPage();
+
 		return (
 			<div className="answers-box">
-				<div className="question-details">
-					<h1 className="question-details__title">{this.props.question.title}</h1>
-					<div className="details">
-						<AuthorShortInfo author={this.props.question.author} />
-						<CreationDate date={this.props.question.creationDate} />
+				{this.props.isDataLoading && <img src={loader} alt="Loading ..." />}
+				{!this.props.isDataLoading && this.props.currentQuestion && (
+					<div className="question-details">
+						<h1 className="question-details__title">{this.props.currentQuestion.title}</h1>
+						<div className="details">
+							<AuthorShortInfo author={this.props.currentQuestion.author} />
+							<CreationDate date={this.props.currentQuestion.creationDate} />
+						</div>
+						<div className="question-details__description">{this.props.currentQuestion.description}</div>
 					</div>
-					<div className="question-details__description">{this.props.question.description}</div>
-				</div>
+				)}
 				<AnswerListTemplate
 					answers={this.props.answers}
 					user={this.props.user}
-					handleLikesClick={this.handleLikesClick}
+					handleLikesClick={this.handleLikeClick}
 					handleAcceptBtnClick={this.handleAcceptBtnClick}
 				/>
-				{this.props.user.password.length>0 && !this.props.question.isClosed ? (
-					<AnswerForm onSubmit={this.handleAnswerFormSubmit} />
-				) : null}
+				{this.props.user && this.props.currentQuestion && !this.props.currentQuestion.isClosed 
+					? <AnswerForm clearForm={this.props.isDataLoading} onSubmit={this.handleAnswerFormSubmit} />
+					: null}
 			</div>
 		);
 	}
 }
 
-const mapStateToProps = (store: any) => {
+const mapStateToProps = (state: IAppState): IAnswersStateProps => {
 	return {
-		newAnswer: store.answer,
-		 user: store.user,
-		 question: store.question,
-		 answers: store.answers.questionAnswers,
- }}
+		user: state.user.user,
+		currentQuestion: state.answers.currentQuestion,
+		answers: state.answers.answers,
+		isQuestionExist: state.answers.isQuestionExist,
+		isDataLoading: state.answers.gettingAnswerData
+	};
+};
 
- const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: any): IAnswersDispatchProps => {
 	return {
-	createAnswer: (author: IUser, question: IQuestion, text: string) =>dispatch(createAnswer(author, question, text)),
-	addAnswerToUserRating: ()=> dispatch(addAcceptedAnswerToUserRating()),
-	addAnswer: (answer: IAnswer)=>dispatch(addAnswer(answer)),
-//  addAnswerToUserRating:() => dispatch(addAnswerToUserRating()),
- }}
+		createAnswer: (answer: IAnswer) => dispatch(createAnswer.call(answer)),
+		acceptAnswer: (answerId: string) => dispatch(acceptAnswer.call(answerId)),
+		getQuestionAndAnswers: (questionId: string) => dispatch(getQuestionAndAnswersByQuestionId.call(questionId)),
+		addLikeToAnswer: (likeData: IAddLikeArgs) => dispatch(addLikeToAnswer.call(likeData)),
+		addAnswerToUserRating: (userId: string) => dispatch(increaseAnswersQtyInUserRating.call(userId))
+	};
+};
 
 export const AnswersPage = connect(mapStateToProps, mapDispatchToProps)(Answers);

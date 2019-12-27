@@ -1,85 +1,79 @@
 import {
-	addUserQuestion,
+	increaseAnswersQtyInUserRating,
+	increaseQuestionsQtyInUserRating,
+	updateUserPersonalInfo,
 	logInUser,
 	logOutUser,
-	createUser,
-	updateUserPersonalInfo,
-	updateUserQuestion,
-	updateUserRating,
-	addQuestionToUserRating,
-	addAnswerToUserRating,
-	addAcceptedAnswerToUserRating,
-	addLikedAnswerToUserRating
+	createUser
 } from './user.action';
+import { IUserState } from './user.model';
 import { defaultUserState } from './user.state';
-import { IUser, IUserRating, IPersonalInfo } from './user.model';
-import { IQuestion } from '../questions/question.model';
-import { createAction, handleActions } from 'redux-actions';
+import { handleActions, combineActions } from 'redux-actions';
 
 export const userReducer = handleActions(
 	{
-		[`${createUser}`]: (state: IUser, action: any) =>{
-		debugger	
-		return {
+		[`${logOutUser}`]: (state: IUserState, action: any) => ({
 			...state,
-			...action.payload
-		}},
-		[`${updateUserPersonalInfo}`]: (state: IUser, action: any) => ({
-			...state,
-			...action.payload
+			user: null,
+			isRegistered: null
 		}),
-		[`${logInUser}`]: (state: IUser, action: any) => ({
+		[`${logInUser.request}`]: (state: IUserState, action: any) => ({
 			...state,
-			...action.payload
+			isUserCreating: true
 		}),
-		[`${addUserQuestion}`]: (state: IUser, action: any) => ({
+		[`${logInUser.success}`]: (state: IUserState, action: any) => ({
 			...state,
-			questions: [ ...state.questions, action.payload ]
+			user: { ...action.payload },
+			isUserCreating: false,
+			isRegistered: true
 		}),
-		[`${updateUserRating}`]: (state: IUser, action: any) => ({
+		[`${logInUser.error}`]: (state: IUserState, action: any) => ({
 			...state,
-			...action.payload
+			isUserCreating: false,
+			isRegistered: false
 		}),
-		[`${logOutUser}`]: (state: IUser, action: any) => ({
-			...defaultUserState
-		}),
-		[`${updateUserQuestion}`]: (state: IUser, action: any) => ({
+		[`${createUser.request}`]: (state: IUserState, action: any) => ({
 			...state,
-			questions: [ ...state.questions, action.payload ]
+			isUserCreating: true
 		}),
-		[`${addLikedAnswerToUserRating}`]: (state: IUser, action: any) => ({
+		[`${createUser.success}`]: (state: IUserState, action: any) => ({
 			...state,
-			rating: {
-				...state.rating,
-				answersLikedByOthers: ++state.rating.answersLikedByOthers
-			}
+			user: { ...action.payload },
+			isUserCreating: false,
+			registrationError: '',
+			isRegistered: true
 		}),
-		[`${addQuestionToUserRating}`]: (state: IUser, action: any) => ({
+		[`${createUser.error}`]: (state: IUserState, action: any) => ({
 			...state,
-			rating: {
-				...state.rating,
-				questionsTotal: ++state.rating.questionsTotal
-			}
+			registrationError: action.payload,
+			isUserCreating: false
 		}),
-		[`${addAcceptedAnswerToUserRating}`]: (state: IUser, action: any) => ({
+
+		[`${combineActions(
+			increaseQuestionsQtyInUserRating.request,
+			increaseAnswersQtyInUserRating.request,
+			updateUserPersonalInfo.request
+		)}`]: (state: IUserState, action: any) => ({
 			...state,
-			rating: {
-				...state.rating,
-				answersAcceptedByOthers: ++state.rating.answersAcceptedByOthers
-			}
+			isUserCreating: true
 		}),
-		[`${addAnswerToUserRating}`]: (state: IUser, action: any) => ({
+		[`${combineActions(
+			increaseQuestionsQtyInUserRating.success,
+			increaseAnswersQtyInUserRating.success,
+			updateUserPersonalInfo.success
+		)}`]: (state: IUserState, action: any) => ({
 			...state,
-			rating: {
-				...state.rating,
-				answersTotal: ++state.rating.answersTotal
-			}
+			user: { ...action.payload },
+			isUserCreating: false
+		}),
+		[`${combineActions(
+			increaseQuestionsQtyInUserRating.error,
+			increaseAnswersQtyInUserRating.error,
+			updateUserPersonalInfo.error
+		)}`]: (state: IUserState, action: any) => ({
+			...state,
+			isUserCreating: false
 		})
 	},
 	defaultUserState
 );
-
-// questionsTotal: 0,
-// answersTotal: 0,
-// answersAcceptedByOthers: 0,
-// answersLikedByOthers: 0,

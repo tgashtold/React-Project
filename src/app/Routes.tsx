@@ -1,33 +1,33 @@
 import React from 'react';
 import RoutesConfig from './config/Routes.config';
-import {AnswersPage, CreateQuestionPage ,Error404, QuestionsListPage , UserInfoPage} from './containers';
-// import mainPage from './containers/mainPage';
-import RegistrationPage from './containers/registration';
-import { Switch, Route} from 'react-router-dom';
-// import * as MainPage from './containers/mainPage';
-
-
+import {
+	AnswersPage,
+	CreateQuestionPage,
+	Error404,
+	QuestionsListPage,
+	UserInfoPage,
+	MainPage,
+	RegistrationPage
+} from './containers';
+import { Switch, Route } from 'react-router-dom';
 
 interface IRoutesProps {}
-interface IRoutesState {
-}
+interface IRoutesState {}
 
 class Routes extends React.Component<IRoutesProps, IRoutesState> {
-
-
-render(){
-	return (
+	render() {
+		return (
 			<Switch>
-				{/* <Route exact path={RoutesConfig.routes.mainPage} component={mainPage} /> */}
+				<Route exact path={RoutesConfig.routes.mainPage} component={MainPage} />
+				<Route exact path={RoutesConfig.routes.createQuestion} component={CreateQuestionPage} />
 				<Route path={RoutesConfig.routes.questionsList} component={QuestionsListPage} />
-				{/* <Route path={RoutesConfig.routes.registration} component={RegistrationPage} /> */}
-				{/* <Route path={RoutesConfig.routes.userInfo} component={UserInfoPage}  />
-		
-				<Route path={RoutesConfig.routes.answers} component={AnswersPage} /> */}		
-				<Route exact path={RoutesConfig.routes.createQuestion} component={CreateQuestionPage}  />
+				<Route path={RoutesConfig.routes.registration} component={RegistrationPage} />
+				<Route path={RoutesConfig.routes.userInfo} component={UserInfoPage} />
+				<Route path={RoutesConfig.routes.answers} component={AnswersPage} />
 				<Route path={'*'} component={Error404} />
 			</Switch>
-		);}
+		);
+	}
 }
 
 export default Routes;

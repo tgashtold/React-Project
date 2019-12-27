@@ -1,32 +1,27 @@
-import {createSagaWorker} from '../../services';
-import {IUser} from '../users/user.model';
-import {createQuestion,closeQuestion,getQuestions,updateQuestion, QuestionsApi,updateQuestionAnswersInfo} from './';
-import { IQuestionInfo } from './question.model';
+import { createSagaWorker } from '../../services';
+import { 
+	createQuestion, 
+	getQuestions, 
+	updateQuestion, 
+	QuestionsApi, 
+	updateQuestionAnswersInfo } from './';
+import { IQuestionInfo, IQuestion, IUpdateQuestionAnswersArgs } from './question.model';
 
-export interface IQuestionCreationInfo{
-	author: IUser; 
-	title: string; 
-	description: string
-}
+const createQuestionRequest = (payload: IQuestion) => QuestionsApi.addQuestion(payload);
+const createQuestionAsync = createSagaWorker(createQuestionRequest, createQuestion);
 
-export interface IUpdateQuestionAnswersArgs{
-	questionId: string; 
-	newAnswerDate: Date;
-}
+const getQuestionsRequest = () => QuestionsApi.getActiveQuestions();
+const getQuestionsAsync = createSagaWorker(getQuestionsRequest, getQuestions);
 
-export const createQuestionRequest = (payload:IQuestionCreationInfo)=>QuestionsApi.addQuestion(payload);
-export const createQuestionAsync = createSagaWorker(createQuestionRequest, createQuestion);
+const updateQuestionRequest = (payload: IQuestionInfo) => QuestionsApi.changeQuestion(payload);
+const updateQuestionAsync = createSagaWorker(updateQuestionRequest, updateQuestion);
 
-export const getQuestionsRequest = ()=> QuestionsApi.getQuestions();
-export const getQuestionsAsync = createSagaWorker(getQuestionsRequest, getQuestions);
+const updateQuestionAnswersInfoRequest = (payload: IUpdateQuestionAnswersArgs) =>
+	QuestionsApi.addNewQuestionAnswer(payload);
+const updateQuestionAnswersInfoAsync = createSagaWorker(updateQuestionAnswersInfoRequest, updateQuestionAnswersInfo);
 
-export const updateQuestionRequest = (payload: IQuestionInfo)=> QuestionsApi.changeQuestion(payload);
-export const updateQuestionAsync = createSagaWorker(updateQuestionRequest, updateQuestion);
-
-export const closeQuestionRequest = (payload: string)=> QuestionsApi.closeQuestion(payload);
-export const closeQuestionAsync = createSagaWorker(closeQuestionRequest, closeQuestion);
-
-export const updateQuestionAnswersInfoRequest = (payload: IUpdateQuestionAnswersArgs)=> QuestionsApi.addNewQuestionAnswer(payload);
-export const updateQuestionAnswersInfoAsync = createSagaWorker(updateQuestionAnswersInfoRequest, updateQuestionAnswersInfo);
-
-
+export { 
+	createQuestionAsync, 
+	getQuestionsAsync, 
+	updateQuestionAsync, 
+	updateQuestionAnswersInfoAsync };

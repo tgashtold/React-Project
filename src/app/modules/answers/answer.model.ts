@@ -1,37 +1,32 @@
-import {User} from '../users';
-import {Question} from '../questions';
+import { IQuestionInfo } from '../questions/question.model';
+import { IUserInfo } from '../users/user.model';
 
+export interface IAnswerState {
+	currentQuestion: IQuestionInfo | null;
+	answers: Array<IAnswerInfo>;
+	gettingAnswerData: boolean;
+	isQuestionExist: boolean;
+}
 
 export interface IAnswerLikes {
-    quantity: number,
-    users: Array<User>
+	quantity: number;
+	users: Array<IUserInfo>;
 }
+
 export interface IAnswer {
-    id: string;
-    question: Question;
-    text: string;
-    author: User;
-    creationDate: Date;
-    isAccepted: boolean;
-    likes: IAnswerLikes;
+	id: string;
+	question: IQuestionInfo;
+	text: string;
+	author: IUserInfo;
+	creationDate: Date;
+	isAccepted: boolean;
 }
 
-export class Answer implements IAnswer {
-    id: string = Math.random().toString().slice(5, 15);
-    question: Question;
-    text: string = '';
-    author: User;
-    creationDate: Date = new Date();
-    isAccepted: boolean = false;
-    likes = {
-        quantity: 0,
-        users: [] as any
-    };
-
-    constructor(author: User, question: Question) {
-        this.author = author;
-        this.question = question;
-    }
-
+export interface IAnswerInfo extends IAnswer {
+	likes: IAnswerLikes;
 }
 
+export interface IAddLikeArgs {
+	answerId: string;
+	user: IUserInfo;
+}

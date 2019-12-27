@@ -1,27 +1,30 @@
 .button {
-  background-color: $middleBlue;
-  border: 0;
-  padding: 10px 20px;
-  border-radius: 50%;
-  transition: .7;
-  font-size: 16px;
-  color: white;
-  min-width: 100px;
-  text-align: center;
-  vertical-align: center;
+	background-color: $middleBlue;
+	border: 0;
+	padding: 10px 20px;
+	border-radius: 50%;
+	transition: .7;
+	font-size: 16px;
+	color: white;
+	min-width: 100px;
+	text-align: center;
+	vertical-align: center;
+	&-wrapper {
+		display: flex;
+		justify-content: center;
+		margin-top: 50px;
+	}
+	&:disabled {
+		background-color: $disabledBlue;
 
-  &:disabled {
-    background-color: $disabledBlue;
+		&:hover {
+			border-radius: 50%;
+			cursor: not-allowed;
+		}
+	}
 
-    &:hover {
-      border-radius: 50%;
-      cursor: not-allowed;
-    }
-
-  }
-
-  &:hover {
-    border-radius: 5%;
-    transition: .7;
-  }
+	&:hover {
+		border-radius: 5%;
+		transition: .7;
+	}
 }

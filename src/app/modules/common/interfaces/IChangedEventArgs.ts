@@ -1,5 +1,5 @@
 export interface IChangedEventArgs {
-    name: string | undefined;
-    value: string;
-    isValid: boolean;
+	name: string | undefined;
+	value: string;
+	isValid: boolean;
 }

@@ -1,63 +1,56 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import RoutesConfig from '../../../config/Routes.config';
-import {Button, ButtonLink} from '../../common';
-import {User} from '../../users';
-import Database from '../../../../data/Database';
-import {LSService} from '../../../services/LS-service';
-import {RouteService} from '../../../services';
+import { Button, ButtonLink } from '../../common';
+import { IUserInfo} from '../user.model';
+import { RouteService } from '../../../services/route-service';
+import { Redirect } from 'react-router-dom';
+import {} from 'react-router-dom';
 
 interface IUserLogoutProps {
+	user: IUserInfo | null;
+	onLogOut: () => any;
 }
 
-interface IUserLogoutState {
-    isLoggedIn: boolean
-}
+interface IUserLogoutState {}
 
 export class UserLogout extends React.Component<IUserLogoutProps, IUserLogoutState> {
-    user: User | null = this.getUser();
-    state: any = {
-        isLoggedIn: !!this.user
-    };
+	handleLogOutClick = () => {
+		this.props.onLogOut();
+	};
 
-    handleClick = () => {
-        this.setState({
-            isLoggedIn: false
-        });
+	getUserLogInTemplate = () => {
+		return (
+			<React.Fragment>
+				<Redirect to={`${RoutesConfig.routes.mainPage}`} />
+				<ButtonLink buttonTitle={'Log In'} buttonRoute={RoutesConfig.routes.mainPage} />
+			</React.Fragment>
+		);
+	};
 
-        LSService.deleteUserFromLS();
-        RouteService.redirectToMainPage();
-    }
+	getUserLogOutTemplate = () => {
+		if (this.props.user) {
+			return (
+				<React.Fragment>
+					<Link
+						className="user-name"
+						to={this.props.user 
+								? `${RouteService.getPathToUserInfoPage()}${this.props.user.id}` 
+								: ''}
+					>{`${this.props.user.personalData.firstName} ${this.props.user.personalData.lastName}`}</Link>
+					<Button clickHandler={this.handleLogOutClick} buttonTitle={'Log out'} />
+				</React.Fragment>
+			);
+		}
+	};
 
-    getUser(): User | null {
-        const userDataFromLS: string | null = window.localStorage.getItem('user')
-        const userId: string = userDataFromLS ? JSON.parse(userDataFromLS) : null;
-
-        if (!userId) return null;
-
-        return Database.users.find((user: User) => user.id === userId);
-    }
-
-    getUserLogInTemplate = () => {
-        return <ButtonLink buttonTitle={"Log In"} buttonRoute={RoutesConfig.routes.mainPage}/>;
-    };
-
-    getUserLogOutTemplate = () => {
-        return <React.Fragment>
-            <Link className="user-name"
-                  to={this.user ? `${RoutesConfig.routes.userInfo.slice(0, -3)}${this.user.id}` : ''}>{`${this.user?.personalData.firstName} ${this.user?.personalData.lastName}`}</Link>
-            <Button clickHandler={this.handleClick} buttonTitle={'Log out'}/>
-        </React.Fragment>;
-    };
-
-    render() {
-        return (
-            <div className="header__user-site">
-                {this.state.isLoggedIn
-                    ? this.getUserLogOutTemplate()
-                    : this.getUserLogInTemplate()}
-            </div>
-        );
-    }
-};
-
+	render() {
+		return (
+			<div className="header__user-site">
+				{this.props.user 
+					? this.getUserLogOutTemplate() 
+					: this.getUserLogInTemplate()}
+			</div>
+		);
+	}
+}

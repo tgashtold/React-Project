@@ -1,78 +1,67 @@
 import React from 'react';
-import { InputLabelWrapper, TextArea, Button, FormWrapper, IChangedEventArgs } from '../modules/common';
-import { Question, QuestionsApi, QuestionForm,  createQuestion } from '../modules/questions';
-import {IUser} from '../modules/users/user.model';
+import { FormWrapper } from '../modules/common';
+import { QuestionForm, createQuestion } from '../modules/questions';
+import { IUserInfo } from '../modules/users/user.model';
+import { increaseQuestionsQtyInUserRating } from '../modules/users';
+import { IAppState } from '../state';
+import { Redirect } from 'react-router-dom';
+import RoutesConfig from '../config/Routes.config';
 import { connect } from 'react-redux';
-import {IQuestionCreationInfo} from '../modules/questions/question.worker';
+import { IQuestion } from '../modules/questions/question.model';
+import loader from '../../assets/images/loader.gif';
 
-
-
-interface ICreateQuestionProps {
-		user: IUser;
-		createQuestion: (questionInfo: IQuestionCreationInfo)=> any;
-		isQuestionCreating: boolean;
+interface ICreateQuestionStateProps {
+	user: IUserInfo | null;
+	isQuestionCreating: boolean;
 }
 
-interface ICreateQuestionState {
+interface ICreateQuestionDispatchProps {
+	createQuestion: (questionInfo: IQuestion) => any;
+	increaseQuestionsQtyInUserRating: (userId: string) => any;
 }
+
+interface ICreateQuestionProps extends ICreateQuestionDispatchProps, ICreateQuestionStateProps {}
+
+interface ICreateQuestionState {}
 
 class CreateQuestion extends React.Component<ICreateQuestionProps, ICreateQuestionState> {
-
-	handleQuestionFormSubmit = (questionTitle: string, questionDescription: string) => {
-		// const userToUpdate = this.props.user;
-		// userToUpdate.rating.questionsTotal += 1;
-
-		// const newQuestion = new Question(userToUpdate);
-
-		// newQuestion.title = questionTitle;
-		// newQuestion.description = questionDescription;
-this.props.createQuestion({author:this.props.user, title: questionTitle, description: questionDescription});
-
-	//TODO:!!!!!!!!!!!!!!!!!!!!!
-// this.props.addAnswerToUserRating();
-		// QuestionsApi.addQuestion(newQuestion);
-		// UsersApi.changeUser(userToUpdate);
-
-		// this.setState({ user: userToUpdate });
-
-
-        // RouteService.redirectToAnswersPage(this.props.question.id);
- 	};
-
-
-	// componentWillUpdate(nextProps: ICreateQuestionProps): boolean {
-	// 	if (nextProps.question){
-	// 	RouteService.redirectToAnswersPage(nextProps.question.id);}
-	// 	console.log(nextProps);
-	// return true;
-	// }
+	handleQuestionFormSubmit = (newQuestion: IQuestion) => {
+		if (this.props.user) {
+			this.props.createQuestion({ ...newQuestion, author: this.props.user });
+			this.props.increaseQuestionsQtyInUserRating(this.props.user.id);
+		}
+	};
 
 	render() {
 		return (
 			<FormWrapper formTitle={'Create a question'}>
-			{	this.props.isQuestionCreating ? <p className ="info-message">Creating question ...</p> : <QuestionForm onSubmit={this.handleQuestionFormSubmit} />}
+				{!this.props.user 
+					? <Redirect to={`${RoutesConfig.routes.mainPage}`} /> 
+					: ''}
+				{this.props.isQuestionCreating 
+					? <img src={loader} alt="Loading ..." /> 
+					: <QuestionForm onSubmit={this.handleQuestionFormSubmit} />
+				}
+				{this.props.isQuestionCreating 
+					? <Redirect to={`${RoutesConfig.routes.questionsList}`} /> 
+					: ''}
 			</FormWrapper>
 		);
 	}
 }
 
-const mapStateToProps = (store: any) => {
-    return {
-			 user: store.user,
-			 isQuestionCreating: store.questions.isQuestionCreating,
-   
-   }}
+const mapStateToProps = (state: IAppState): ICreateQuestionStateProps => {
+	return {
+		user: state.user.user,
+		isQuestionCreating: state.questions.isDataLoading
+	};
+};
 
-
-   const mapDispatchToProps = (dispatch: any) => {
-    return {
-    createQuestion: (questionInfo: IQuestionCreationInfo) =>dispatch(createQuestion.fetch(questionInfo)),
-   }}
-
-
+const mapDispatchToProps = (dispatch: any): ICreateQuestionDispatchProps => {
+	return {
+		increaseQuestionsQtyInUserRating: (userId: string) => dispatch(increaseQuestionsQtyInUserRating.call(userId)),
+		createQuestion: (question: IQuestion) => dispatch(createQuestion.call(question))
+	};
+};
 
 export const CreateQuestionPage = connect(mapStateToProps, mapDispatchToProps)(CreateQuestion);
-
-
-
-

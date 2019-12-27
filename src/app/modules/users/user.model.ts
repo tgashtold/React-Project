@@ -1,44 +1,47 @@
-import {Question} from '../questions';
+import { IQuestionInfo } from '../questions/question.model';
 
 export interface IUser {
-    id: string;
-    password: string;
-    personalData: IPersonalInfo;
-    questions: Array<Question>;
-    rating: IUserRating;
+	password: string;
+	personalData: IPersonalInfo;
 }
 
-export interface IPersonalInfo{ firstName: string;
-    lastName: string;
-    email: string;
-    progLanguages: string[];
-    workingPosition: string;
-    workExperience: string;}
-
-export interface IUserRating{
-    questionsTotal: number;
-    answersTotal: number;
-    answersAcceptedByOthers: number;
-    answersLikedByOthers: number;
-}
-export class User implements IUser {
-    id: string = Math.random().toString().slice(5, 15);
-    password = '';
-    personalData = {
-        firstName: '',
-        lastName: '',
-        email: '',
-        progLanguages: [],
-        workingPosition: '',
-        workExperience: ''
-    };
-    questions: Array<Question> = [];
-    rating = {
-        questionsTotal: 0,
-        answersTotal: 0,
-        answersAcceptedByOthers: 0,
-        answersLikedByOthers: 0
-    };
+export interface IUserInfoInDB extends IUser {
+	id: string;
+	rating: IUserRating;
 }
 
+export interface IUserInfo extends IUserInfoInDB {
+	questions: Array<IQuestionInfo>;
+}
 
+export interface IUserState {
+	user: IUserInfo | null;
+	isUserCreating: boolean;
+	isRegistered: boolean | null;
+	registrationError: string;
+}
+
+export interface IUserLogInArgs {
+	email: string;
+	password: string;
+}
+export interface IUpdatePersonalInfoArgs {
+	personalData: IPersonalInfo;
+	id: string;
+}
+
+export interface IPersonalInfo {
+	firstName: string;
+	lastName: string;
+	email: string;
+	progLanguages: string[];
+	workingPosition: string;
+	workExperience: string;
+}
+
+export interface IUserRating {
+	questionsTotal: number;
+	answersTotal: number;
+	answersAcceptedByOthers: number;
+	answersLikedByOthers: number;
+}

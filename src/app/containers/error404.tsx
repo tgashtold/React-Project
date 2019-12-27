@@ -12,4 +12,3 @@ export class Error404 extends React.Component<IUserInfoProps, IUserInfoState> {
 		);
 	}
 }
-

@@ -1,30 +1,26 @@
 import {
-	closeQuestionAsync,
 	createQuestionAsync,
 	getQuestionsAsync,
 	updateQuestionAsync,
 	updateQuestionAnswersInfoAsync
 } from './question.worker';
-import { takeEvery} from 'redux-saga/effects';
-import {createQuestion,closeQuestion,getQuestions,updateQuestion, updateQuestionAnswersInfo} from './';
+import { takeEvery } from 'redux-saga/effects';
+import { createQuestion, getQuestions, updateQuestion, updateQuestionAnswersInfo } from './';
 
-
-export function* watchCreateQuestion() {
-  yield takeEvery(createQuestion.fetch, createQuestionAsync);
+function* watchCreateQuestion() {
+	yield takeEvery(createQuestion.call, createQuestionAsync);
 }
 
-export function* watchGetQuestions() {
-  yield takeEvery(getQuestions.fetch, getQuestionsAsync);
+function* watchGetQuestions() {
+	yield takeEvery(getQuestions.call, getQuestionsAsync);
 }
 
-export function* watchUpdateQuestion() {
-  yield takeEvery(updateQuestion.fetch, updateQuestionAsync);
+function* watchUpdateQuestion() {
+	yield takeEvery(updateQuestion.call, updateQuestionAsync);
 }
 
-export function* watchCloseQuestion() {
-  yield takeEvery(closeQuestion.fetch, closeQuestionAsync);
+function* watchupdateQuestionAnswersInfo() {
+	yield takeEvery(updateQuestionAnswersInfo.call, updateQuestionAnswersInfoAsync);
 }
 
-export function* watchupdateQuestionAnswersInfo() {
-  yield takeEvery(updateQuestionAnswersInfo.fetch, updateQuestionAnswersInfoAsync);
-}
+export { watchCreateQuestion, watchGetQuestions, watchUpdateQuestion, watchupdateQuestionAnswersInfo };

@@ -1,58 +1,66 @@
 import React from 'react';
-import {RegistrationForm, User, UsersApi, createUser} from '../modules/users';
-import {IUser} from '../modules/users/user.model';
-import {IPersonalInfo} from '../modules/users/user.model';
-import {LSService} from '../services/LS-service';
-import {FormWrapper} from '../modules/common';
-import {RouteService} from "../services";
+import { RegistrationForm, createUser } from '../modules/users';
+import { IUser, IUserInfo } from '../modules/users/user.model';
+import { FormWrapper } from '../modules/common';
 import { connect } from 'react-redux';
+import { IAppState } from '../state';
+import { RouteService } from '../services';
+import { Redirect } from 'react-router-dom';
+import loader from '../../assets/images/loader.gif';
 
-
-interface IRegistrationProps {
-    user: IUser;
-    createUser: (password:string,personalInfo: IPersonalInfo)=> any
+interface IRegistrationStateProps {
+	user: IUserInfo | null;
+	registrationError: string;
+	isRegistrationProcess: boolean;
 }
 
-interface IRegistrationState {
-    // user: IUser;
+interface IRegistrationDispatchProps {
+	createUser: (newUser: IUser) => any;
 }
+
+interface IRegistrationProps extends IRegistrationStateProps, IRegistrationDispatchProps {}
+
+interface IRegistrationState {}
 
 class Registration extends React.Component<IRegistrationProps, IRegistrationState> {
-    // constructor(props: IRegistrationProps) {
-    //     super(props);
-    //     this.state = {
-    //         user: this.props.user,
-    //     };
-    // }
+	handleFormSubmit = (user: IUser) => {
+		this.props.createUser(user);
+	};
 
-    handleFormSubmit = (user:IUser) => {
-        // this.setState({user: user});
-               UsersApi.addUser(user as User);
-        // LSService.addUserIdToLS(user.id);
-        this.props.createUser(user.password, user.personalData);
-       alert(this.props.user.personalData.firstName);
-               RouteService.redirectToUserInfoPage(user.id);
-    };
+	render() {
+		return (
+			<FormWrapper formTitle={'Registration form'}>
+				<RegistrationForm
+					errorText={this.props.registrationError}
+					onSubmit={this.handleFormSubmit}
+					formBtnTitle={'Register'}
+				/>
 
-    render() {
-        return (
-            <FormWrapper formTitle={'Registration form'}>
-
-                <RegistrationForm onSubmit={this.handleFormSubmit} user={this.props.user} formBtnTitle={'Register'}/>
-            </FormWrapper>
-        );
-    }
+				{this.props.isRegistrationProcess && <img src={loader} alt="Loading ..." />}
+				{this.props.user && !this.props.isRegistrationProcess ? (
+					<Redirect to={`${RouteService.getPathToUserInfoPage()}${this.props.user.id}`} />
+				) : (
+					''
+				)}
+			</FormWrapper>
+		);
+	}
 }
 
-const mapStateToProps = (store: any) => {
-    return {
-       user: store.user,
-   }}
+const mapDispatchToProps = (dispatch: any): IRegistrationDispatchProps => {
+	return {
+		createUser: (newUser: IUser) => dispatch(createUser.call(newUser))
+	};
+};
 
-   const mapDispatchToProps = (dispatch: any) => {
-    return {
-       createUser: (password:string,personalInfo: IPersonalInfo) =>dispatch(createUser(password, personalInfo)),
-   }}
-const RegistrationPage = connect(mapStateToProps, mapDispatchToProps)(Registration);
+const mapStateToProps = (state: IAppState): IRegistrationStateProps => {
+	return {
+		user: state.user.user,
+		registrationError: state.user.registrationError,
+		isRegistrationProcess: state.user.isUserCreating
+	};
+};
 
-export default  RegistrationPage;
+export const RegistrationPage = connect(mapStateToProps, mapDispatchToProps)(Registration);
+
+

@@ -1,105 +1,100 @@
 import React from 'react';
-import {IChangedEventArgs} from '../../../index';
+import { IChangedEventArgs } from '../../../index';
 
 interface IInputProps {
-    inputBoxClassName?: string;
-    valueToInsert?: string;
-    name: string;
-    onChanged: (values: IChangedEventArgs) => void;
-    errorMessage: string;
-    placeholder: string;
-    validationFunction: (value: any) => boolean;
-    inputType: string;
-    min?: number;
-    max?: number;
-    maxLength?: number;
+	name: string;
+	errorMessage: string;
+	placeholder: string;
+	inputType: string;
+	min?: number;
+	max?: number;
+	inputBoxClassName?: string;
+	valueToInsert?: string;
+	maxLength?: number;
+	validationFunction: (value: any) => boolean;
+	onChanged: (values: IChangedEventArgs) => void;
 }
 
 interface IInputState {
-    inputValue: string;
-    isValid: boolean;
+	inputValue: string;
+	isValid: boolean;
+	errorMessage: string;
 }
 
 export class Input extends React.Component<IInputProps, IInputState> {
-    errorMessage: string = '';
+	constructor(props: any) {
+		super(props);
+		this.state = {
+			inputValue: this.props.valueToInsert || '',
+			isValid: !!this.props.valueToInsert,
+			errorMessage: ''
+		};
+	}
 
-    constructor(props: any) {
-        super(props);
-        this.state = {
-            inputValue: this.props.valueToInsert || '',
-            isValid: !!this.props.valueToInsert
-        };
-    }
+	handleBlur = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const valueEnteredByUser: string = event.target.value;
+		const isValueValid = this.isValueValid(valueEnteredByUser);
 
-    handleBlur = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const valueEnteredByUser: string = event.target.value;
-        const isValueValid = this.isValueValid(valueEnteredByUser);
+		if (isValueValid) {
+			this.setState({ inputValue: valueEnteredByUser, isValid: true, errorMessage: '' });
 
-        if (isValueValid) {
-            this.errorMessage = '';
-            this.setState({inputValue: valueEnteredByUser, isValid: true});
+			this.props.onChanged({
+				name: this.props.name,
+				value: valueEnteredByUser,
+				isValid: isValueValid
+			});
+		} else {
+			if (valueEnteredByUser.length > 0) {
+				this.setState({ isValid: false });
+				this.setState({ errorMessage: this.props.errorMessage });
+			}
+		}
+	};
 
-            this.props.onChanged({
-                name: this.props.name,
-                value: valueEnteredByUser,
-                isValid: isValueValid
-            });
-        } else {
-            if (valueEnteredByUser.length > 0) {
-                this.setState({isValid: false});
-                this.errorMessage = this.props.errorMessage;
-            }
-        }
-    };
+	handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const valueEnteredByUser: string = event.target.value;
+		const isValueValid = this.isValueValid(valueEnteredByUser);
 
-    handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const valueEnteredByUser: string = event.target.value;
-        const isValueValid = this.isValueValid(valueEnteredByUser);
-        if (isValueValid) {
-            this.setState({isValid: true});
-            this.errorMessage = '';
-        } else {
-            this.setState({isValid: false});
-        }
-        this.setState({inputValue: valueEnteredByUser});
+		if (isValueValid) {
+			this.setState({ isValid: true, errorMessage: '' });
+		} else {
+			this.setState({ isValid: false });
+		}
 
-        this.props.onChanged({
-            name: this.props.name,
-            value: valueEnteredByUser,
-            isValid: isValueValid
-        });
-    };
+		this.setState({ inputValue: valueEnteredByUser });
 
-    isValueValid = (value: any): boolean => {
-        const result: boolean = this.props.validationFunction(value);
+		this.props.onChanged({
+			name: this.props.name,
+			value: valueEnteredByUser,
+			isValid: isValueValid
+		});
+	};
 
-        return result;
-    };
+	isValueValid = (value: any): boolean => {
+		const result: boolean = this.props.validationFunction(value);
 
-    render() {
-        return (
-            <div className={`input-wrapper ${this.props.inputBoxClassName || ''}`}>
-                {this.errorMessage.length > 0 && <span className="error-message">{this.errorMessage}</span>}
-                <input
-                    onChange={this.handleChange}
-                    onBlur={this.handleBlur}
-                    className={
-                        this.state.isValid
-                            ? 'input input-approved'
-                            :'input'
-                    }
-                    required
-                    type={this.props.inputType}
-                    placeholder={this.props.placeholder}
-                    value={this.props.valueToInsert}
-                    name={this.props.name}
-                    min={this.props.min}
-                    max={this.props.max}
-                    maxLength={this.props.maxLength}
-                />
-            </div>
-        );
-    }
+		return result;
+	};
+
+	render() {
+		return (
+			<div className={`input-wrapper ${this.props.inputBoxClassName || ''}`}>
+				{this.state.errorMessage.length > 0 && <span className="error-message">{this.state.errorMessage}</span>}
+				<input
+					onChange={this.handleChange}
+					onBlur={this.handleBlur}
+					className={this.state.isValid 
+						? 'input input-approved' 
+						: 'input'}
+					type={this.props.inputType}
+					placeholder={this.props.placeholder}
+					value={this.props.valueToInsert}
+					name={this.props.name}
+					min={this.props.min}
+					max={this.props.max}
+					maxLength={this.props.maxLength}
+				/>
+			</div>
+		);
+	}
 }
-
-

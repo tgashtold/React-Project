@@ -1,86 +1,95 @@
 import React from 'react';
-import {IChangedEventArgs} from '../../../common';
+import { IChangedEventArgs } from '../../../common';
 
 interface ITextareaProps {
-    name: string;
-    onChanged: (values: IChangedEventArgs) => void;
-    specificAreaClassName?: string;
-    rowsQty: number;
-    maxLength: number;
-    placeholderValue: string;
-    value?:string;
+	onChanged: (values: IChangedEventArgs) => void;
+	name: string;
+	rowsQty: number;
+	maxLength: number;
+	placeholderValue: string;
+	value?: string;
+	clear?: boolean;	
+	specificAreaClassName?: string;
 }
 
 interface ITextareaState {
-    enteredValue: string;
+	enteredValue: string;
 }
 
 export class TextArea extends React.Component<ITextareaProps, ITextareaState> {
-    constructor(props: any) {
-        super(props);
+	constructor(props: any) {
+		super(props);
 
-        this.state = {enteredValue: this.props.value || '' };
-    }
+		this.state = { enteredValue: this.props.value || '' };
+	}
 
-    handleBlur = (event: React.FocusEvent<HTMLTextAreaElement>) => {
-        const valueEnteredByUser: string = event.target.value;
-        this.setState({enteredValue: valueEnteredByUser});
+	componentWillUpdate() {
+		if (this.props.clear) {
+			this.setState({ enteredValue: '' });
+		}
+	}
 
-        if (this.isValueValid(valueEnteredByUser)) {
-            this.props.onChanged({
-                name: this.props.name,
-                isValid: true,
-                value: valueEnteredByUser,
-            });
-        } else {
-            this.props.onChanged({
-                name: this.props.name,
-                isValid: false,
-                value: valueEnteredByUser,
-            });
-        }
-    };
+	handleBlur = (event: React.FocusEvent<HTMLTextAreaElement>) => {
+		const valueEnteredByUser: string = event.target.value;
+		
+		this.setState({ enteredValue: valueEnteredByUser });
 
-    handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const valueEnteredByUser: string = event.target.value;
-        this.setState({enteredValue: valueEnteredByUser});
+		if (this.isValueValid(valueEnteredByUser)) {
+			this.props.onChanged({
+				name: this.props.name,
+				isValid: true,
+				value: valueEnteredByUser
+			});
+		} else {
+			this.props.onChanged({
+				name: this.props.name,
+				isValid: false,
+				value: valueEnteredByUser
+			});
+		}
+	};
 
-        if (this.isValueValid(valueEnteredByUser)) {
-            this.props.onChanged({
-                name: this.props.name,
-                isValid: true,
-                value: valueEnteredByUser,
-            });
-        } else {
-            this.props.onChanged({
-                name: this.props.name,
-                isValid: false,
-                value: valueEnteredByUser,
-            });
-        }
-    };
+	handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+		const valueEnteredByUser: string = event.target.value;
 
-    isValueValid = (inputValue: string): boolean => {
-        const result: boolean = inputValue.length > 0;
+		this.setState({ enteredValue: valueEnteredByUser });
 
-        return result;
-    };
+		if (this.isValueValid(valueEnteredByUser)) {
+			this.props.onChanged({
+				name: this.props.name,
+				isValid: true,
+				value: valueEnteredByUser
+			});
+		} else {
+			this.props.onChanged({
+				name: this.props.name,
+				isValid: false,
+				value: valueEnteredByUser
+			});
+		}
+	};
 
-    render() {
-        return (
-            <textarea
-                value={this.state.enteredValue}
-                name={this.props.name}
-                onChange={this.handleChange}
-                onBlur={this.handleBlur}
-                className={`${this.state.enteredValue.length > 0
-                    ? 'input-approved'
-                    : ''} input textarea ${this.props.specificAreaClassName || ''}`}
-                rows={this.props.rowsQty}
-                maxLength={this.props.maxLength}
-                placeholder={this.props.placeholderValue}
-            />
-        );
-    }
+	isValueValid = (inputValue: string): boolean => {
+		const result: boolean = inputValue.length > 0;
+
+		return result;
+	};
+
+	render() {
+		return (
+			<textarea
+				value={this.state.enteredValue}
+				name={this.props.name}
+				onChange={this.handleChange}
+				onBlur={this.handleBlur}
+				className={`${this.state.enteredValue.length > 0 
+					? 'input-approved' 
+					: ''
+				} input textarea ${this.props.specificAreaClassName || ''}`}
+				rows={this.props.rowsQty}
+				maxLength={this.props.maxLength}
+				placeholder={this.props.placeholderValue}
+			/>
+		);
+	}
 }
-

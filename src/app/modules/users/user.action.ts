@@ -1,28 +1,18 @@
-import {createAction} from "redux-actions";
-import {IUser, IUserRating, IPersonalInfo} from './user.model';
-import {IQuestion} from '../questions/question.model';
+import { createAction } from 'redux-actions';
+import { createHttpAction } from '../../services';
 
-export const createUser = createAction('CREATE_USER', (password: string, personalInfo: IPersonalInfo) => ({
-    password: password,
-    personalInfo: personalInfo
-}));
-export const updateUserPersonalInfo = createAction('UPDATE_PERSONAL_INFO',
-    (personalInfo: IPersonalInfo) => ({personalInfo: personalInfo}));
-export const logInUser = createAction('LOG_IN_USER',
-    (user: IUser) => user);
-export const addUserQuestion = createAction('ADD_USER_QUESTION',
-    (question: IQuestion) => question);
-export const updateUserRating = createAction('UPDATE_USER_RATING',
-    (newRating: IUserRating) => ({rating: newRating}));
+const logInUser = createHttpAction('LOG_IN_USER');
+const logOutUser = createAction('LOG_OUT_USER');
+const createUser = createHttpAction('CREATE_USER');
+const updateUserPersonalInfo = createHttpAction('UPDATE_USER_PERSONAL_INFO');
+const increaseQuestionsQtyInUserRating = createHttpAction('INCREASE_QUESTIONS_QTY_IN_USER_RATING');
+const increaseAnswersQtyInUserRating = createHttpAction('INCREASE_ANSWERS_QTY_IN_USER_RATING');
 
-export const logOutUser = createAction('LOG_OUT_USER',
-    (user: IUser) => user);
-export const updateUserQuestion = createAction('UPDATE_USER_QUESTIONS',
-    (questions: IQuestion) => questions);
-    export const addQuestionToUserRating=createAction('ADD_QUESTION_TO_USER_RATING');
-    export const addAnswerToUserRating=createAction('ADD_ANSWER_TO_USER_RATING');
-    export const addAcceptedAnswerToUserRating=createAction('ADD_ACCEPTED_ANSWER_TO_USER_RATING');
-    export const addLikedAnswerToUserRating=createAction('ADD_LIKED_ANSWER_TO_USER_RATING');
-
-
-  
+export {
+	logInUser,
+	logOutUser,
+	increaseQuestionsQtyInUserRating,
+	increaseAnswersQtyInUserRating,
+	createUser,
+	updateUserPersonalInfo
+};
