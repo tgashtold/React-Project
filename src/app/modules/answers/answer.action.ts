@@ -4,3 +4,5 @@ export const getQuestionAndAnswersByQuestionId = createHttpAction('GET_QUESTION_
 export const createAnswer = createHttpAction('CREATE_ANSWER');
 export const addLikeToAnswer = createHttpAction('ADD_LIKE_TO_ANSWER');
 export const acceptAnswer = createHttpAction('ACCEPT_ANSWER');
+export const getAnswersFromRequestedPosition= createHttpAction('GET_ANSWERS_FROM_REQUESTED_POSITION');
+

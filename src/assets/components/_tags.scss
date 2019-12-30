@@ -1,0 +1,32 @@
+.tags {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: flex-start;
+	width: 95%;
+	margin: 30px 0;
+	&__item {
+		@include font(13px);
+		padding: 5px 10px;
+		background-color: $lightBlue;
+		margin: 10px 10px 10px 0;
+		border: 0;
+		color: grey;
+		border-radius: 5px;
+		transition: .3s;
+		text-transform: uppercase;
+
+		&:hover {
+			color: $middleBlue;
+			transition: .3s;
+		}
+	}
+}
+
+.tag-active {
+	background-color: $middleBlue;
+	color: white;
+	&:hover {
+		color: white;
+	}
+}

@@ -11,6 +11,7 @@ interface IAnswerTemplateProps {
 	user: IUserInfo | null;
 	handleLikesClick: (answer: IAnswerInfo) => void;
 	handleAcceptBtnClick: (answer: IAnswerInfo) => void;
+	disableLike ?: boolean;
 }
 
 interface IAnswerTemplateState {}
@@ -27,14 +28,14 @@ export class AnswerTemplate extends React.Component<IAnswerTemplateProps, IAnswe
 					<CreationDate date={answer.creationDate} />
 				</div>
 				<p className="answer">{answer.text}</p>
-				<AnswerLikes answer={answer} handleLikesClick={() => this.props.handleLikesClick(this.props.answer)} />
-				{this.props.user && UserServices.isUserAndQuestionAuthorEqual(this.props.user, question) && !question.isClosed 
+				<AnswerLikes disabled={this.props.disableLike} answer={answer} handleLikesClick={() => this.props.handleLikesClick(this.props.answer)} />
+				{this.props.user && UserServices.isUserAndQuestionAuthorEqual(this.props.user, question) && !question.isClosed
 					? (
 						<Button
 							clickHandler={() => this.props.handleAcceptBtnClick(this.props.answer)}
 							buttonTitle={'Accept answer and close discussion'}
 						/>
-					) 
+					)
 					: null}
 			</div>
 		);

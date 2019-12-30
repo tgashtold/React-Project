@@ -4,6 +4,7 @@ export interface IQuestion {
 	id: string;
 	author: IUserInfo;
 	title: string;
+	hashTags: Array<string>;
 	creationDate: Date;
 	description: string;
 	isClosed: boolean;
@@ -12,12 +13,14 @@ export interface IQuestion {
 export interface IQuestionState {
 	questions: IQuestionInfo[];
 	isDataLoading: boolean;
+	tags: Array<string>;
+	isFilterProcess: boolean;
 }
 
 export interface IQuestionInfo extends IQuestion {
 	answersQty: number;
 	latestAnswerDate: Date | null;
-	
+
 }
 
 export interface IQuestionCreationInfo {

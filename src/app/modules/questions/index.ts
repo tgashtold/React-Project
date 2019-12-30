@@ -10,7 +10,10 @@ export {
 	updateQuestion,
 	updateQuestionAnswersInfo,
 	allowToCreateQuestion,
-	forbidToCreateQuestion
+	forbidToCreateQuestion,
+	searchQuestionsByTitle,
+	getQuestionsByTag,
+	getQuestionsTags
 } from './question.action';
 export { defaultQuestionState } from './question.state';
 export { QuestionServices } from './question.services';

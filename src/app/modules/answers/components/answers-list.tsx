@@ -8,12 +8,14 @@ interface IAnswersListProps {
 	user: IUserInfo | null;
 	handleLikesClick: (answer: IAnswerInfo) => void;
 	handleAcceptBtnClick: (answer: IAnswerInfo) => void;
+	disableLike?: (answer: IAnswerInfo)=> boolean;
 }
 
 export class AnswerListTemplate extends React.Component<IAnswersListProps> {
 	getAnswersTemplates = (): any => {
 		const answersTemplatesArr: Array<any> = this.props.answers.map((questionAnswer: IAnswerInfo) => (
 			<AnswerTemplate
+				disableLike={this.props.disableLike&& this.props.disableLike(questionAnswer)}
 				key={questionAnswer.id}
 				user={this.props.user}
 				answer={questionAnswer}
@@ -28,7 +30,7 @@ export class AnswerListTemplate extends React.Component<IAnswersListProps> {
 	render() {
 		return (
 			<div className="answers">
-				{this.props.answers.length > 0 
+				{this.props.answers.length > 0
 					? this.getAnswersTemplates()
 					: <p className="info-message">no answers</p>
 				}

@@ -5,12 +5,20 @@ export class RouteService {
 		window.location.pathname = RoutesConfig.routes.error;
 	}
 
+	static getSearchValueFromLoactionSearch(locationSearchText: string): string {
+		return locationSearchText.slice(3);
+	}
+
 	static redirectToAnswersPage(id: string): void {
 		window.location.pathname = `${RoutesConfig.routes.answers.slice(0, -3)}${id}`;
 	}
 
 	static getPathToAnswersPage(questionId: string): string {
 		return `${RoutesConfig.routes.answers.slice(0, -3)}${questionId}`;
+	}
+
+	static getQuestionsSearchRoute(): string {
+		return RoutesConfig.routes.questionsList_search.slice(0, -8);
 	}
 
 	static getPathToUserInfoPage(): string {

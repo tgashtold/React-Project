@@ -1,5 +1,5 @@
 import React from 'react';
-import { TagsInput } from '../../../modules/users';
+import { InputTags} from '../../../modules/common';
 import { IUserInfo, IUser } from '../../../modules/users/user.model';
 import { InputEmail, InputPassword, InputText, InputNumber, InputLabelWrapper } from '../../../modules/common';
 import { IChangedEventArgs, Button } from '../../../modules/common';
@@ -15,8 +15,6 @@ interface IRegistrationFormProps {
 }
 
 interface IRegistrationFormState {
-	areProgLanguages: boolean;
-	progLanguagesValue: Array<string>;
 	errorMessage: string;
 }
 
@@ -27,13 +25,15 @@ export class RegistrationForm extends React.Component<IRegistrationFormProps, IR
 		email: 'UserEmail',
 		password: 'UserPassword',
 		workPosition: 'WorkPosition',
-		workExperience: 'WorkExperience'
+		workExperience: 'WorkExperience',
+		progLanguages: 'ProgLanguages',
 	};
 	protected requiredFieldsNames = [
 		this.inputsNames.firstName,
 		this.inputsNames.lastName,
 		this.inputsNames.email,
-		this.inputsNames.password
+		this.inputsNames.password,
+		this.inputsNames.progLanguages
 	];
 	protected notRequiredFieldsNames = [ this.inputsNames.workExperience, this.inputsNames.workPosition ];
 
@@ -71,17 +71,16 @@ export class RegistrationForm extends React.Component<IRegistrationFormProps, IR
 						: false,
 				value: this.props.insertValue && this.props.user ? this.props.user.personalData.workingPosition : ''
 			},
-			areProgLanguages: !!this.props.insertValue && !!this.props.user,
-			progLanguagesValue:
-				this.props.insertValue && this.props.user ? this.props.user.personalData.progLanguages : []
+			[this.inputsNames.progLanguages]: {
+				isValid:
+					this.props.insertValue && this.props.user
+						? this.props.user.personalData.progLanguages.length > 0
+						: false,
+				value: this.props.insertValue && this.props.user ? this.props.user.personalData.progLanguages :[]
+			},
+
 		};
 	}
-
-	getEnteredProgLanguages = (progLanguages: Array<string>) => {
-		const areEntered: boolean = progLanguages.length > 0;
-
-		this.setState({ progLanguagesValue: progLanguages, areProgLanguages: areEntered });
-	};
 
 	areFieldsCorrectlyFilled = (): boolean => {
 		const areRequiredFieldsCorrectlyFilled: boolean = this.requiredFieldsNames.every(
@@ -95,7 +94,7 @@ export class RegistrationForm extends React.Component<IRegistrationFormProps, IR
 			return isCorrectValue || isNoValue;
 		});
 
-		return areRequiredFieldsCorrectlyFilled && areNotRequiredFieldsCorrectlyFilled && this.state.areProgLanguages;
+		return areRequiredFieldsCorrectlyFilled && areNotRequiredFieldsCorrectlyFilled;
 	};
 
 	handleBtnClick = () => {
@@ -119,7 +118,7 @@ export class RegistrationForm extends React.Component<IRegistrationFormProps, IR
 					firstName: this.state[`${fieldsNamesObj.firstName}`].value,
 					lastName: this.state[`${fieldsNamesObj.lastName}`].value,
 					email: this.state[`${fieldsNamesObj.email}`].value,
-					progLanguages: this.state.progLanguagesValue as any,
+					progLanguages: this.state[`${fieldsNamesObj.progLanguages}`].value as any,
 					workingPosition: this.state[`${fieldsNamesObj.workPosition}`].value,
 					workExperience: this.state[`${fieldsNamesObj.workExperience}`].value
 				}
@@ -128,7 +127,7 @@ export class RegistrationForm extends React.Component<IRegistrationFormProps, IR
 			this.props.onSubmit(newUser);
 		}
 	};
-	
+
 	inputChangesHandler = (requiredData: IChangedEventArgs): void => {
 		this.setState({ [`${requiredData.name}`]: requiredData });
 	};
@@ -173,7 +172,10 @@ export class RegistrationForm extends React.Component<IRegistrationFormProps, IR
 				</InputLabelWrapper>
 
 				<InputLabelWrapper isRequiredField={true} labelText={'Preferred programming languages'}>
-					<TagsInput tags={this.state.progLanguagesValue} sendTags={this.getEnteredProgLanguages} />
+					<InputTags
+						name={this.inputsNames.progLanguages}
+						tags={this.state[`${this.inputsNames.progLanguages}`].value}
+						onChanged={this.inputChangesHandler} />
 				</InputLabelWrapper>
 
 				<InputLabelWrapper isRequiredField={false} labelText={'Working position'}>

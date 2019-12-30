@@ -1,15 +1,17 @@
 import React from 'react';
+import {IChangedEventArgs} from "../../..";
 
 interface ITagsInputProps {
 	tags: Array<string>;
-	sendTags: Function;
+	onChanged: (input: IChangedEventArgs) => void;
+	name: string;
 }
 
 interface ITagsInputState {
 	tags: Array<string>;
 }
 
-export class TagsInput extends React.Component<ITagsInputProps, ITagsInputState> {
+export class InputTags extends React.Component<ITagsInputProps, ITagsInputState> {
 	tagsMaxLength: number = 25;
 
 	constructor(props: any) {
@@ -23,14 +25,25 @@ export class TagsInput extends React.Component<ITagsInputProps, ITagsInputState>
 		const newTagsArr = [ ...this.state.tags.filter((_, index) => index !== indexToRemove) ];
 
 		this.setState({ tags: newTagsArr });
-		this.props.sendTags(newTagsArr);
+
+			this.props.onChanged({
+				name: this.props.name,
+				value: newTagsArr,
+				isValid: newTagsArr.length>0,
+			});
+
+
 	};
 
 	addTags = (event: any) => {
 		if (event.target.value !== '') {
 			const newTagsArr = [ ...this.state.tags, event.target.value ];
 
-			this.props.sendTags(newTagsArr);
+			this.props.onChanged({
+				name: this.props.name,
+				value: newTagsArr,
+				isValid: newTagsArr.length>0,
+			});
 
 			this.setState({ tags: newTagsArr });
 
@@ -52,9 +65,10 @@ export class TagsInput extends React.Component<ITagsInputProps, ITagsInputState>
 					))}
 				</ul>
 				<input
+					name={this.props.name}
 					type="text"
-					onKeyUp={(event) => (event.key === 'Enter' 
-						? this.addTags(event) 
+					onKeyUp={(event) => (event.key === 'Enter'
+						? this.addTags(event)
 						: null)}
 					placeholder="Press enter to add tags"
 					className="tag-input"

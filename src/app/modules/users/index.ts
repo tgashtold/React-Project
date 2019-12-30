@@ -7,7 +7,6 @@ export { UserPersonalInfo } from './components/user-personal-info';
 export { UserRating } from './components/user-rating';
 export { PersonalInfoItem } from './components/personal-info-item';
 export { UserRatingItem } from './components/user-rating-item';
-export { TagsInput } from './components/tags-input';
 export { UserApi } from './user.api';
 export { UserServices } from './user.services';
 export { UserWelcomeMessage } from './components/user-welcome';

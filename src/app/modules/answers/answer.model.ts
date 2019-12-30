@@ -6,11 +6,34 @@ export interface IAnswerState {
 	answers: Array<IAnswerInfo>;
 	gettingAnswerData: boolean;
 	isQuestionExist: boolean;
+	answersTotalQty: number;
+}
+
+export interface IGetAswersFromPositionArgs {
+	startNumber: number,
+	itemsCount: number,
+	questionId: string
+}
+
+export interface IGetQuestionAndAswersArgs {
+	questionId: string,
+	answersCountPerPage: number,
+}
+
+export interface ICreateAnswerArgs {
+	answer: IAnswer
+	answersCountPerPage: number,
 }
 
 export interface IAnswerLikes {
 	quantity: number;
 	users: Array<IUserInfo>;
+
+}
+
+export interface IAcceptAnswerArgs extends IAnswerLikes{
+	answerId:string,
+	answersCountPerPage: number,
 }
 
 export interface IAnswer {
@@ -29,4 +52,5 @@ export interface IAnswerInfo extends IAnswer {
 export interface IAddLikeArgs {
 	answerId: string;
 	user: IUserInfo;
+
 }

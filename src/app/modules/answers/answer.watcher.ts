@@ -2,10 +2,11 @@ import {
 	addLikeToAnswerAsync,
 	acceptAnswerAsync,
 	getQuestionAndAnswersAsync,
-	createAnswerAsync
+	createAnswerAsync,
+	getAnswersFromRequestedPositionAsync
 } from './answer.worker';
 import { takeEvery } from 'redux-saga/effects';
-import { addLikeToAnswer, acceptAnswer, getQuestionAndAnswersByQuestionId, createAnswer } from './';
+import { addLikeToAnswer, acceptAnswer, getQuestionAndAnswersByQuestionId, createAnswer, getAnswersFromRequestedPosition } from './';
 
 function* watchCreateAnswer() {
 	yield takeEvery(createAnswer.call, createAnswerAsync);
@@ -23,4 +24,8 @@ function* watchGetQuestionAndAnswers() {
 	yield takeEvery(getQuestionAndAnswersByQuestionId.call, getQuestionAndAnswersAsync);
 }
 
-export { watchAcceptAnswer, watchAddLike, watchCreateAnswer, watchGetQuestionAndAnswers };
+function* watchGetAnswersFromRequestedPosition() {
+	yield takeEvery(getAnswersFromRequestedPosition.call, getAnswersFromRequestedPositionAsync);
+}
+
+export { watchAcceptAnswer, watchAddLike, watchCreateAnswer, watchGetQuestionAndAnswers,watchGetAnswersFromRequestedPosition };

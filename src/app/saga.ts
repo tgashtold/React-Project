@@ -8,7 +8,10 @@ export default function* saga() {
 		questionWatchers.watchCreateQuestion(),
 		questionWatchers.watchGetQuestions(),
 		questionWatchers.watchUpdateQuestion(),
-		questionWatchers.watchupdateQuestionAnswersInfo(),
+		questionWatchers.watchUpdateQuestionAnswersInfo(),
+		questionWatchers.watchGetQuestionsTags(),
+		questionWatchers.watchGetQuestionsByTag(),
+		questionWatchers.watchSearchQuestionByTitle(),
 		userWatchers.watchUserQuestion(),
 		userWatchers.watchLogInUser(),
 		userWatchers.watchIncreaseQuestionsInUserRating(),
@@ -17,6 +20,7 @@ export default function* saga() {
 		answerWatchers.watchGetQuestionAndAnswers(),
 		answerWatchers.watchCreateAnswer(),
 		answerWatchers.watchAddLike(),
-		answerWatchers.watchAcceptAnswer()
+		answerWatchers.watchAcceptAnswer(),
+		answerWatchers.watchGetAnswersFromRequestedPosition()
 	]);
 }

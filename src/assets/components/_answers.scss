@@ -24,26 +24,43 @@
   }
 
   &-rating {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     align-self: flex-end;
     @include font(20px, 600);
     color: $green4;
 
     &__button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       border: 0;
+
       background-color: transparent;
       @include font(17px, 600);
       margin-right: 10px;
       color: rgb(190, 11, 11);
-      widows: 45px;
+      width: 45px;
       height: 45px;
       border-radius: 50%;
       border: 2px solid rgb(190, 11, 11);
-      transition: .3;
+      transition: .3s;
 
       &:hover {
         box-shadow: 0 0 4px 0 red;
-        transition: .3;
+        transition: .3s;
       }
+
+      &:disabled{
+        border-color:rgb(219, 151, 151);
+        color:rgb(219, 151, 151);
+        &:hover{
+          box-shadow: none;
+        }
+      }
+
+
     }
   }
 
@@ -53,7 +70,7 @@
     justify-content: center;
     align-items: center;
     border-bottom: 2px solid $green3;
-    padding: 40px 20px;
+    padding: 35px 20px;
     width: 100%;
   }
 

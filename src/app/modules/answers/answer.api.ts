@@ -1,99 +1,137 @@
 import Database from '../../../data/Database';
-import { IAnswer, IAnswerInfo, IAddLikeArgs } from './answer.model';
-import { QuestionsApi } from '../questions';
-import { UserApi } from '../users';
-import { IQuestionInfo } from '../questions/question.model';
-import { IUserInfoInDB } from '../users/user.model';
-import { AnswerServices } from './answer.services';
+import {
+    IAnswerInfo,
+    IAddLikeArgs,
+    IGetAswersFromPositionArgs,
+    IGetQuestionAndAswersArgs,
+    ICreateAnswerArgs
+} from './answer.model';
+import {QuestionsApi} from '../questions';
+import {UserApi} from '../users';
+import {IQuestionInfo} from '../questions/question.model';
+import {IUserInfoInDB} from '../users/user.model';
+import {AnswerServices} from './answer.services';
 
 export class AnswerApi {
-	static async getAnswers(): Promise<any> {
-		return await Database.answers;
-	}
+    static async getAnswers(): Promise<any> {
+        return await Database.answers;
+    }
 
-	static getSortedAnswersByQuestionId(questionId: string): Array<IAnswerInfo> {
-		const answers: Array<IAnswerInfo> = Database.answers.filter(
-			(answer: IAnswerInfo) => questionId === answer.question.id
-		);
+    static getAnswerById(answerId: string): IAnswerInfo {
+        return Database.answers.find(
+            (answer: IAnswerInfo) => answer.id === answerId
+        );
+    }
 
-		return AnswerServices.sortAnswersByCreationDate(answers);
-	}
+    static replaceAnswerInDB(updatedAnswer: IAnswerInfo): IAnswerInfo {
+        Database.answers = Database.answers.map((answer: IAnswerInfo) => {
+            if (answer.id === updatedAnswer.id) {
+                return {
+                    ...answer,
+                    ...updatedAnswer
+                }
+            } else {
+                return answer;
+            }
+        });
 
-	static async acceptAnswerByIdAndUpdateAuthorRating(answerId: string): Promise<any> {
-		const answerToAccept: IAnswerInfo = await Database.answers.find(
-			(answer: IAnswerInfo) => answer.id === answerId
-		);
-		answerToAccept.isAccepted = true;
+        return updatedAnswer;
+    }
 
-		Database.answers = await Database.answers.filter((answer: IAnswerInfo) => answer.id !== answerId);
-		Database.answers.push(answerToAccept);
+    static getSortedAnswersByQuestionId(questionId: string): Array<IAnswerInfo> {
+        const answers: Array<IAnswerInfo> = Database.answers.filter(
+            (answer: IAnswerInfo) => questionId === answer.question.id
+        );
 
-		const answerAuthor: IUserInfoInDB = UserApi.getUserById(answerToAccept.author.id);
+        return AnswerServices.sortAnswersByCreationDate(answers);
+    }
 
-		answerAuthor.rating.answersAcceptedByOthers += 1;
-		UserApi.updateUser(answerAuthor);
+    static async acceptAnswerByIdAndUpdateAuthorRating(answerId: string): Promise<any> {
+        const answerToAccept: IAnswerInfo = await this.getAnswerById(answerId);
+        answerToAccept.isAccepted = true;
 
-		return await {
-			currentQuestion: QuestionsApi.closeQuestionSync(answerToAccept.question.id),
-			answers: this.getSortedAnswersByQuestionId(answerToAccept.question.id)
-		};
-	}
+        this.replaceAnswerInDB(answerToAccept);
 
-	static async addLikeToAnswerAndUpdateAuthorRating(args: IAddLikeArgs): Promise<any> {
-		const answerToAddLike: IAnswerInfo = await Database.answers.find(
-			(answer: IAnswerInfo) => answer.id === args.answerId
-		);
+        const answerAuthor: IUserInfoInDB = UserApi.getUserById(answerToAccept.author.id);
 
-		answerToAddLike.likes.quantity += 1;
-		answerToAddLike.likes.users.push(args.user);
+        answerAuthor.rating.answersAcceptedByOthers += 1;
+        UserApi.updateUser(answerAuthor);
 
-		const answerAuthor: IUserInfoInDB = UserApi.getUserById(answerToAddLike.author.id);
+        return await {
+            currentQuestion: QuestionsApi.closeQuestionSync(answerToAccept.question.id),
+            updatedAnswer: this.getSortedAnswersByQuestionId(answerToAccept.question.id)
+        };
+    }
 
-		answerAuthor.rating.answersLikedByOthers += 1;
+    static async addLikeToAnswerAndUpdateAuthorRating(args: IAddLikeArgs): Promise<any> {
+        const answerToAddLike: IAnswerInfo = await this.getAnswerById(args.answerId);
 
-		UserApi.updateUser(answerAuthor);
+        answerToAddLike.likes.quantity += 1;
+        answerToAddLike.likes.users.push(args.user);
 
-		answerToAddLike.author = {
-			...answerAuthor,
-			questions: []
-		};
+        const answerAuthor: IUserInfoInDB = UserApi.getUserById(answerToAddLike.author.id);
 
-		Database.answers = await Database.answers.filter((answer: IAnswerInfo) => answer.id !== args.answerId);
-		Database.answers.push(answerToAddLike);
+        answerAuthor.rating.answersLikedByOthers += 1;
 
-		return this.getSortedAnswersByQuestionId(answerToAddLike.question.id);
-	}
+        UserApi.updateUser(answerAuthor);
 
-	static async addAnswer(newAnswer: IAnswer): Promise<any> {
-		const createdAnswer: IAnswerInfo = {
-			...newAnswer,
-			id: Math.random().toString().slice(5, 15),
-			likes: {
-				quantity: 0,
-				users: []
-			}
-		};
+        answerToAddLike.author = {
+            ...answerAuthor,
+            questions: []
+        };
 
-		await Database.answers.push(createdAnswer);
-		return await {
-			currentQuestion: QuestionsApi.addNewQuestionAnswerSync({
-				newAnswerDate: createdAnswer.creationDate,
-				questionId: createdAnswer.question.id
-			}),
-			answers: this.getSortedAnswersByQuestionId(createdAnswer.question.id)
-		};
-	}
+        this.replaceAnswerInDB(answerToAddLike);
 
-	static async getQuestionWithAnswersByQuestionId(questionId: string): Promise<any> {
-		const question: IQuestionInfo | undefined = await QuestionsApi.getQuestionById(questionId);
+        return answerToAddLike;
+    }
 
-		if (!question) {
-			throw new Error('No such question');
-		}
 
-		return {
-			currentQuestion: question,
-			answers: this.getSortedAnswersByQuestionId(questionId)
-		};
-	}
+    static async addAnswer(data: ICreateAnswerArgs): Promise<any> {
+        const createdAnswer: IAnswerInfo = {
+            ...data.answer,
+            id: Math.random().toString().slice(5, 15),
+            likes: {
+                quantity: 0,
+                users: []
+            }
+        };
+
+        QuestionsApi.addNewQuestionAnswerSync({
+            newAnswerDate: createdAnswer.creationDate,
+            questionId: createdAnswer.question.id
+        });
+        await Database.answers.push(createdAnswer);
+
+        const answers: Array<IAnswerInfo> = this.getSortedAnswersByQuestionId(data.answer.question.id);
+
+        return await {
+            answers: answers.slice(0, data.answersCountPerPage),
+            answersTotalQty: answers.length,
+        };
+    }
+
+    static async getQuestionWithAnswersByQuestionId(requestData: IGetQuestionAndAswersArgs): Promise<any> {
+        const question: IQuestionInfo | undefined = await QuestionsApi.getQuestionById(requestData.questionId);
+
+        if (!question) {
+            throw new Error('No such question');
+        }
+        const answers: Array<IAnswerInfo> = this.getSortedAnswersByQuestionId(requestData.questionId);
+
+        return {
+            currentQuestion: question,
+            answers: answers.slice(0, requestData.answersCountPerPage),
+            answersTotalQty: answers.length
+        };
+    }
+
+    static async getAnswersFromRequestedPosition(requestData: IGetAswersFromPositionArgs): Promise<any> {
+        const questions: Array<IAnswerInfo> = await this.getSortedAnswersByQuestionId(requestData.questionId);
+        const requestedQuestions: Array<IAnswerInfo> = questions.slice(
+            requestData.startNumber,
+            requestData.startNumber + requestData.itemsCount
+        );
+
+        return requestedQuestions;
+    }
 }

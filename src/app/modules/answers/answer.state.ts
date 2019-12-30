@@ -4,5 +4,6 @@ export const defaultAnswerState: IAnswerState = {
 	currentQuestion: null,
 	answers: [],
 	gettingAnswerData: false,
-	isQuestionExist: true
+	isQuestionExist: true,
+	answersTotalQty: 0,
 };
