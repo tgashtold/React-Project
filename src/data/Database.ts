@@ -1,136 +1,136 @@
 const Database: any = {
-	users: [
-		{
-			id: '9586434820',
-			password: 'fffFFF12345',
-			personalData: {
-				firstName: 'Tania',
-				lastName: 'Gashtold',
-				email: 'gashtold_tania@mail.ru',
-				progLanguages: [ 'js' ],
-				workingPosition: 'noo',
-				workExperience: '5'
-			},
-			rating: {
-				questionsTotal: 2,
-				answersTotal: 6,
-				answersAcceptedByOthers: 3,
-				answersLikedByOthers: 2
-			}
-		}
-	],
+    users: [
+        {
+            id: '9586434820',
+            password: 'fffFFF12345',
+            personalData: {
+                firstName: 'Tania',
+                lastName: 'Gashtold',
+                email: 'gashtold_tania@mail.ru',
+                progLanguages: ['js'],
+                workingPosition: 'noo',
+                workExperience: '5'
+            },
+            rating: {
+                questionsTotal: 2,
+                answersTotal: 6,
+                answersAcceptedByOthers: 3,
+                answersLikedByOthers: 2
+            }
+        }
+    ],
 
-	questions: [
-		{
-			id: '9586567820',
-			author: {
-				id: '9586434820',
-				password: 'fffFFF12345',
-				personalData: {
-					firstName: 'Tania',
-					lastName: 'Gashtold',
-					email: 'gashtold_tania@mail.ru',
-					progLanguages: [ 'js' ],
-					workingPosition: 'noo',
-					workExperience: '5'
-				},
-				rating: {
-					questionsTotal: 2,
-					answersTotal: 6,
-					answersAcceptedByOthers: 3,
-					answersLikedByOthers: 2
-				}
-			},
-			title: 'How to outline text11111',
-			creationDate: new Date(),
-			hashTags: ['js', 'html'],
-			description: 'detailed1111111111111 description of the question',
-			isClosed: false,
-			answersQty: 2,
-			latestAnswerDate: new Date()
-		},
-		{
-			id: '9876567820',
-			author: {
-				id: '9586434820',
-				password: 'fffFFF12345',
-				personalData: {
-					firstName: 'Tania',
-					lastName: 'Gashtold',
-					email: 'gashtold_tania@mail.ru',
-					progLanguages: [ 'js' ],
-					workingPosition: 'noo',
-					workExperience: '5'
-				},
-				rating: {
-					questionsTotal: 2,
-					answersTotal: 6,
-					answersAcceptedByOthers: 3,
-					answersLikedByOthers: 2
-				}
-			},
-			title: 'How to outline text2222222',
-			creationDate: new Date(),
-			hashTags: ['js', 'react', 'redux'],
-			description: 'detailed222222222222222 description of the question',
-			isClosed: false,
-			answersQty: 2,
-			latestAnswerDate: new Date()
-		}
-	],
+    questions: [
+        {
+            id: '9586567820',
+            author: {
+                id: '9586434820',
+                password: 'fffFFF12345',
+                personalData: {
+                    firstName: 'Tania',
+                    lastName: 'Gashtold',
+                    email: 'gashtold_tania@mail.ru',
+                    progLanguages: ['js'],
+                    workingPosition: 'noo',
+                    workExperience: '5'
+                },
+                rating: {
+                    questionsTotal: 2,
+                    answersTotal: 6,
+                    answersAcceptedByOthers: 3,
+                    answersLikedByOthers: 2
+                }
+            },
+            title: 'How to outline text11111',
+            creationDate: new Date(),
+            hashTags: ['js', 'html'],
+            description: 'detailed1111111111111 description of the question',
+            isClosed: false,
+            answersQty: 2,
+            latestAnswerDate: new Date()
+        },
+        {
+            id: '9876567820',
+            author: {
+                id: '9586434820',
+                password: 'fffFFF12345',
+                personalData: {
+                    firstName: 'Tania',
+                    lastName: 'Gashtold',
+                    email: 'gashtold_tania@mail.ru',
+                    progLanguages: ['js'],
+                    workingPosition: 'noo',
+                    workExperience: '5'
+                },
+                rating: {
+                    questionsTotal: 2,
+                    answersTotal: 6,
+                    answersAcceptedByOthers: 3,
+                    answersLikedByOthers: 2
+                }
+            },
+            title: 'How to outline text2222222',
+            creationDate: new Date(),
+            hashTags: ['js', 'react', 'redux'],
+            description: 'detailed222222222222222 description of the question',
+            isClosed: false,
+            answersQty: 2,
+            latestAnswerDate: new Date()
+        }
+    ],
 
-	answers: [
-		// {
-		// 	id: '9294667820',
-		// 	question: {
-		// 		id: '9586567820',
-		// 		author: {
-		// 			id: '9586434820',
-		// 			password: 'fffFFF12345',
-		// 			personalData: {
-		// 				firstName: 'Tania',
-		// 				lastName: 'Gashtold',
-		// 				email: 'gashtold_tania@mail.ru',
-		// 				progLanguages: [ 'js' ],
-		// 				workingPosition: 'noo',
-		// 				workExperience: '5'
-		// 			},
-		// 			rating: {
-		// 				questionsTotal: 2,
-		// 				answersTotal: 6,
-		// 				answersAcceptedByOthers: 3,
-		// 				answersLikedByOthers: 2
-		// 			}
-		// 		},
-		// 		title: 'How to outline text11111',
-		// 		creationDate: new Date(),
-		// 		description: 'detailed1111111111111 description of the question',
-		// 		isClosed: false
-		// 	},
-		// 	text: 'response to question 11111111111111111111111',
-		// 	author: {
-		// 		id: '9586434820',
-		// 		password: 'fffFFF12345',
-		// 		personalData: {
-		// 			firstName: 'Tania',
-		// 			lastName: 'Gashtold',
-		// 			email: 'gashtold_tania@mail.ru',
-		// 			progLanguages: [ 'js' ],
-		// 			workingPosition: 'noo',
-		// 			workExperience: '5'
-		// 		},
-		// 		rating: {
-		// 			questionsTotal: 2,
-		// 			answersTotal: 6,
-		// 			answersAcceptedByOthers: 3,
-		// 			answersLikedByOthers: 2
-		// 		}
-		// 	},
-		// 	creationDate: new Date(),
-		// 	isAccepted: false,
-		// 	likes: { quantity: 2, users: [] }
-		// }
-	]
+    answers: [
+        // {
+        // 	id: '9294667820',
+        // 	question: {
+        // 		id: '9586567820',
+        // 		author: {
+        // 			id: '9586434820',
+        // 			password: 'fffFFF12345',
+        // 			personalData: {
+        // 				firstName: 'Tania',
+        // 				lastName: 'Gashtold',
+        // 				email: 'gashtold_tania@mail.ru',
+        // 				progLanguages: [ 'js' ],
+        // 				workingPosition: 'noo',
+        // 				workExperience: '5'
+        // 			},
+        // 			rating: {
+        // 				questionsTotal: 2,
+        // 				answersTotal: 6,
+        // 				answersAcceptedByOthers: 3,
+        // 				answersLikedByOthers: 2
+        // 			}
+        // 		},
+        // 		title: 'How to outline text11111',
+        // 		creationDate: new Date(),
+        // 		description: 'detailed1111111111111 description of the question',
+        // 		isClosed: false
+        // 	},
+        // 	text: 'response to question 11111111111111111111111',
+        // 	author: {
+        // 		id: '9586434820',
+        // 		password: 'fffFFF12345',
+        // 		personalData: {
+        // 			firstName: 'Tania',
+        // 			lastName: 'Gashtold',
+        // 			email: 'gashtold_tania@mail.ru',
+        // 			progLanguages: [ 'js' ],
+        // 			workingPosition: 'noo',
+        // 			workExperience: '5'
+        // 		},
+        // 		rating: {
+        // 			questionsTotal: 2,
+        // 			answersTotal: 6,
+        // 			answersAcceptedByOthers: 3,
+        // 			answersLikedByOthers: 2
+        // 		}
+        // 	},
+        // 	creationDate: new Date(),
+        // 	isAccepted: false,
+        // 	likes: { quantity: 2, users: [] }
+        // }
+    ]
 };
 
 export default Database;

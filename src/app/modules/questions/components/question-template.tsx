@@ -1,59 +1,60 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { QuestionInfoItem } from '../';
-import { RouteService } from '../../../services';
-import { IQuestionInfo } from '../question.model';
+import {Link} from 'react-router-dom';
+import {QuestionInfoItem} from '../';
+import {RouteService} from '../../../services';
+import {IQuestionInfo} from '../question.model';
 
 interface IQuestionTemplateProps {
-	question: IQuestionInfo;
-	specificWrapperClass?: string;
-	specificLinkClass?: string;
-	specificTitleClass?: string;
+    question: IQuestionInfo;
+    specificWrapperClass?: string;
+    specificLinkClass?: string;
+    specificTitleClass?: string;
 }
 
-interface IQuestionTemplateState {}
+interface IQuestionTemplateState {
+}
 
 export class QuestionTemplate extends React.Component<IQuestionTemplateProps, IQuestionTemplateState> {
-	render() {
-		const lastAnswerTime: Date | null = this.props.question.latestAnswerDate;
-		const creationDate: Date = this.props.question.creationDate;
+    render() {
+        const lastAnswerTime: Date | null = this.props.question.latestAnswerDate;
+        const creationDate: Date = this.props.question.creationDate;
 
-		return (
-			<details className={`user-question__wrapper ${this.props.specificWrapperClass || ''}`}>
-				<summary className={`user-question__title ${this.props.specificTitleClass || ''}`}>
-					<Link
-						className={`user-question__link ${this.props.specificLinkClass || ''}`}
-						to={RouteService.getPathToAnswersPage(this.props.question.id)}
-					>
-						{this.props.question.title}
-					</Link>
-					<div className="question-info__wrapper">
-						<QuestionInfoItem
-							infoItemTitle={'Total answers'}
-							infoItemValue={this.props.question.answersQty}
-						/>
+        return (
+            <details className={`user-question__wrapper ${this.props.specificWrapperClass || ''}`}>
+                <summary className={`user-question__title ${this.props.specificTitleClass || ''}`}>
+                    <Link
+                        className={`user-question__link ${this.props.specificLinkClass || ''}`}
+                        to={RouteService.getPathToAnswersPage(this.props.question.id)}
+                    >
+                        {this.props.question.title}
+                    </Link>
+                    <div className="question-info__wrapper">
+                        <QuestionInfoItem
+                            infoItemTitle={'Total answers'}
+                            infoItemValue={this.props.question.answersQty}
+                        />
 
-						<QuestionInfoItem
-							infoItemTitle={'Latest answer'}
-							infoItemValue={
-                                lastAnswerTime 
+                        <QuestionInfoItem
+                            infoItemTitle={'Latest answer'}
+                            infoItemValue={
+                                lastAnswerTime
                                     ? `${lastAnswerTime.toLocaleDateString()} ${lastAnswerTime.toLocaleTimeString()}`
-								    : '-'
-							}
-						/>
-                        
-						<QuestionInfoItem
-							infoItemTitle={'Creation'}
-							infoItemValue={
-                                creationDate 
+                                    : '-'
+                            }
+                        />
+
+                        <QuestionInfoItem
+                            infoItemTitle={'Creation'}
+                            infoItemValue={
+                                creationDate
                                     ? `${creationDate.toLocaleDateString()} ${creationDate.toLocaleTimeString()}`
-								    : '-'
-							}
-						/>
-					</div>
-				</summary>
-				<p className="user-question__description"> {this.props.question.description}</p>
-			</details>
-		);
-	}
+                                    : '-'
+                            }
+                        />
+                    </div>
+                </summary>
+                <p className="user-question__description"> {this.props.question.description}</p>
+            </details>
+        );
+    }
 }

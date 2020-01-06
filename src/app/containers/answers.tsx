@@ -1,24 +1,20 @@
 import React from 'react';
 import {IQuestionInfo} from '../modules/questions/question.model';
-import {AuthorShortInfo, UserServices, increaseAnswersQtyInUserRating} from '../modules/users';
+import {UserService, userActions} from '../modules/users';
 import {IUserInfo} from '../modules/users/user.model';
-import {CreationDate, Pagination, TagsField} from '../modules/common';
+import {Pagination, TagsField} from '../modules/common';
 import {
     AnswerForm,
-    AnswerListTemplate,
-    createAnswer,
-    acceptAnswer,
-    addLikeToAnswer,
-    getQuestionAndAnswersByQuestionId,
-    getAnswersFromRequestedPosition
+    AnswerList,
+    answerActions
 } from '../modules/answers';
+import {QuestionDetails} from '../modules/questions';
 import {
     IAddLikeArgs,
     IAnswer,
     IAnswerInfo,
     IGetAswersFromPositionArgs,
     IGetQuestionAndAswersArgs,
-    ICreateAnswerArgs
 } from '../modules/answers/answer.model';
 import {RouteService} from '../services';
 import {connect} from 'react-redux';
@@ -41,7 +37,7 @@ interface IAnswersStateProps {
 }
 
 interface IAnswersDispatchProps {
-    createAnswer: (data: ICreateAnswerArgs) => any;
+    createAnswer: (newAnswer: IAnswer) => any;
     acceptAnswer: (answerId: string) => any;
     getQuestionAndAnswers: (requestData: IGetQuestionAndAswersArgs) => any;
     addLikeToAnswer: (likeData: IAddLikeArgs) => any;
@@ -65,12 +61,10 @@ class Answers extends React.Component<RouteComponentProps<IAnswersParams> & IAns
             questionId: this.props.match.params.id,
             answersCountPerPage: this.answersQtyPerPage
         });
-
     }
 
     handleLikeClick = (answer: IAnswerInfo) => {
         this.props.user && this.props.addLikeToAnswer({answerId: answer.id, user: this.props.user});
-
     };
 
     handleAcceptBtnClick = (answer: IAnswerInfo) => {
@@ -79,11 +73,14 @@ class Answers extends React.Component<RouteComponentProps<IAnswersParams> & IAns
 
     handleAnswerFormSubmit = (answer: IAnswer) => {
         if (this.props.user && this.props.currentQuestion) {
-            this.props.createAnswer({
-                answer: {...answer, author: this.props.user, question: this.props.currentQuestion},
+            this.props.createAnswer(
+                {...answer, author: this.props.user, question: this.props.currentQuestion}
+            );
+            this.props.addAnswerToUserRating(this.props.user.id);
+            this.props.getQuestionAndAnswers({
+                questionId: this.props.match.params.id,
                 answersCountPerPage: this.answersQtyPerPage
             });
-            this.props.addAnswerToUserRating(this.props.user.id);
         }
     };
 
@@ -102,8 +99,8 @@ class Answers extends React.Component<RouteComponentProps<IAnswersParams> & IAns
 
     disableLike = (answer: IAnswerInfo): boolean => {
         return !(!!this.props.user &&
-            !UserServices.isUserLikedAnswer(this.props.user, answer) &&
-            !UserServices.isUserAndAnswerAuthorEqual(this.props.user, answer));
+            !UserService.isUserLikedAnswer(this.props.user, answer) &&
+            !UserService.isUserAndAnswerAuthorEqual(this.props.user, answer));
     };
 
     render() {
@@ -115,24 +112,16 @@ class Answers extends React.Component<RouteComponentProps<IAnswersParams> & IAns
                 {!this.props.isDataLoading &&
                 this.props.currentQuestion && (
                     <React.Fragment>
-                        <div className="question-details">
-                            <h1 className="question-details__title">{this.props.currentQuestion.title}</h1>
-                            <div className="details">
-                                <AuthorShortInfo author={this.props.currentQuestion.author}/>
-                                <CreationDate date={this.props.currentQuestion.creationDate}/>
-                            </div>
-                            <div className="question-details__description">
-                                {this.props.currentQuestion.description}
-                            </div>
+                        <QuestionDetails question={this.props.currentQuestion}>
                             <TagsField redirectBasicRoute={RoutesConfig.routes.questionsList} activeTag={this.activeTag}
                                        onTagClick={this.handleTagClick} tags={this.props.currentQuestion.hashTags}/>
-                        </div>
+                        </QuestionDetails>
                         <Pagination
                             activePage={this.activePage}
                             handlePageBtnClick={this.handlePagesBtnClick}
                             pagesQty={Math.ceil(this.props.answersTotalQty / this.answersQtyPerPage)}
                         >
-                            <AnswerListTemplate
+                            <AnswerList
                                 disableLike={this.disableLike}
                                 answers={this.props.answers}
                                 user={this.props.user}
@@ -142,9 +131,9 @@ class Answers extends React.Component<RouteComponentProps<IAnswersParams> & IAns
                         </Pagination>
                     </React.Fragment>
                 )}
-                {this.props.user && this.props.currentQuestion && !this.props.currentQuestion.isClosed ? (
-                    <AnswerForm clearForm={this.props.isDataLoading} onSubmit={this.handleAnswerFormSubmit}/>
-                ) : null}
+                {this.props.user && this.props.currentQuestion && !this.props.currentQuestion.isClosed
+                    ? <AnswerForm clearForm={this.props.isDataLoading} onSubmit={this.handleAnswerFormSubmit}/>
+                    : null}
             </div>
         );
     }
@@ -163,14 +152,14 @@ const mapStateToProps = (state: IAppState): IAnswersStateProps => {
 
 const mapDispatchToProps = (dispatch: any): IAnswersDispatchProps => {
     return {
-        createAnswer: (data: ICreateAnswerArgs) => dispatch(createAnswer.call(data)),
-        acceptAnswer: (answerId: string) => dispatch(acceptAnswer.call(answerId)),
+        createAnswer: (newAnswer: IAnswer) => dispatch(answerActions.createAnswer.call(newAnswer)),
+        acceptAnswer: (answerId: string) => dispatch(answerActions.acceptAnswer.call(answerId)),
         getQuestionAndAnswers: (requestData: IGetQuestionAndAswersArgs) =>
-            dispatch(getQuestionAndAnswersByQuestionId.call(requestData)),
-        addLikeToAnswer: (likeData: IAddLikeArgs) => dispatch(addLikeToAnswer.call(likeData)),
-        addAnswerToUserRating: (userId: string) => dispatch(increaseAnswersQtyInUserRating.call(userId)),
+            dispatch(answerActions.getQuestionAndAnswersByQuestionId.call(requestData)),
+        addLikeToAnswer: (likeData: IAddLikeArgs) => dispatch(answerActions.addLikeToAnswer.call(likeData)),
+        addAnswerToUserRating: (userId: string) => dispatch(userActions.increaseAnswersQtyInUserRating.call(userId)),
         getAnswersFromRequestedPosition: (requestData: IGetAswersFromPositionArgs) =>
-            dispatch(getAnswersFromRequestedPosition.call(requestData))
+            dispatch(answerActions.getAnswersFromRequestedPosition.call(requestData))
     };
 };
 

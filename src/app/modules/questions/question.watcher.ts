@@ -1,57 +1,41 @@
-import {
-    createQuestionAsync,
-    getQuestionsAsync,
-    updateQuestionAsync,
-    updateQuestionAnswersInfoAsync,
-    searchQuestionsByTitleAsync,
-    getQuestionsByTagAsync,
-    getQuestionsTagsAsync
-} from './question.worker';
+import {questionWorkers} from './question.worker';
 import {takeEvery} from 'redux-saga/effects';
-import {
-    createQuestion,
-    getQuestions,
-    updateQuestion,
-    getQuestionsTags,
-    getQuestionsByTag,
-    updateQuestionAnswersInfo,
-    searchQuestionsByTitle
-} from './';
+import {questionActions} from './';
 
 function* watchCreateQuestion() {
-    yield takeEvery(createQuestion.call, createQuestionAsync);
+    yield takeEvery(questionActions.createQuestion.call, questionWorkers.createQuestionAsync);
 }
 
 function* watchGetQuestions() {
-    yield takeEvery(getQuestions.call, getQuestionsAsync);
+    yield takeEvery(questionActions.getQuestions.call, questionWorkers.getQuestionsAsync);
 }
 
 function* watchUpdateQuestion() {
-    yield takeEvery(updateQuestion.call, updateQuestionAsync);
+    yield takeEvery(questionActions.updateQuestion.call, questionWorkers.updateQuestionAsync);
 }
 
 function* watchUpdateQuestionAnswersInfo() {
-    yield takeEvery(updateQuestionAnswersInfo.call, updateQuestionAnswersInfoAsync);
+    yield takeEvery(questionActions.updateQuestionAnswersInfo.call, questionWorkers.updateQuestionAnswersInfoAsync);
 }
 
 function* watchSearchQuestionByTitle() {
-    yield takeEvery(searchQuestionsByTitle.call, searchQuestionsByTitleAsync);
+    yield takeEvery(questionActions.searchQuestionsByTitle.call, questionWorkers.searchQuestionsByTitleAsync);
 }
 
 function* watchGetQuestionsByTag() {
-    yield takeEvery(getQuestionsByTag.call, getQuestionsByTagAsync);
+    yield takeEvery(questionActions.getQuestionsByTag.call, questionWorkers.getQuestionsByTagAsync);
 }
 
 function* watchGetQuestionsTags() {
-    yield takeEvery(getQuestionsTags.call, getQuestionsTagsAsync);
+    yield takeEvery(questionActions.getQuestionsTags.call, questionWorkers.getQuestionsTagsAsync);
 }
 
-export {
-    watchCreateQuestion,
-    watchGetQuestions,
-    watchUpdateQuestion,
-    watchUpdateQuestionAnswersInfo,
-    watchSearchQuestionByTitle,
-    watchGetQuestionsByTag,
-    watchGetQuestionsTags,
-};
+export const questionWatchers: any[] = [
+    watchCreateQuestion(),
+    watchGetQuestions(),
+    watchUpdateQuestion(),
+    watchUpdateQuestionAnswersInfo(),
+    watchSearchQuestionByTitle(),
+    watchGetQuestionsByTag(),
+    watchGetQuestionsTags(),
+];

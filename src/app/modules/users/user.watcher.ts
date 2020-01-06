@@ -1,43 +1,31 @@
-import {
-	increaseAnswersQtyInUserRatingAsync,
-	updateUserPersonalInfoAsync,
-	createUserAsync,
-	logInUserAsync,
-	increaseQuestionsQtyInUserRatingAsync
-} from './user.worker';
-import { takeEvery } from 'redux-saga/effects';
-import {
-	updateUserPersonalInfo,
-	createUser,
-	logInUser,
-	increaseAnswersQtyInUserRating,
-	increaseQuestionsQtyInUserRating
-} from './user.action';
+import {userWorkers} from './user.worker';
+import {takeEvery} from 'redux-saga/effects';
+import {userActions} from './user.action';
 
 function* watchUserQuestion() {
-	yield takeEvery(createUser.call, createUserAsync);
+    yield takeEvery(userActions.createUser.call, userWorkers.createUserAsync);
 }
 
 function* watchLogInUser() {
-	yield takeEvery(logInUser.call, logInUserAsync);
+    yield takeEvery(userActions.logInUser.call, userWorkers.logInUserAsync);
 }
 
 function* watchUpdateUserPersonalInfo() {
-	yield takeEvery(updateUserPersonalInfo.call, updateUserPersonalInfoAsync);
+    yield takeEvery(userActions.updateUserPersonalInfo.call, userWorkers.updateUserPersonalInfoAsync);
 }
 
 function* watchIncreaseAnswersInUserRating() {
-	yield takeEvery(increaseAnswersQtyInUserRating.call, increaseAnswersQtyInUserRatingAsync);
+    yield takeEvery(userActions.increaseAnswersQtyInUserRating.call, userWorkers.increaseAnswersQtyInUserRatingAsync);
 }
 
 function* watchIncreaseQuestionsInUserRating() {
-	yield takeEvery(increaseQuestionsQtyInUserRating.call, increaseQuestionsQtyInUserRatingAsync);
+    yield takeEvery(userActions.increaseQuestionsQtyInUserRating.call, userWorkers.increaseQuestionsQtyInUserRatingAsync);
 }
 
-export {
-	watchUpdateUserPersonalInfo,
-	watchIncreaseAnswersInUserRating,
-	watchIncreaseQuestionsInUserRating,
-	watchLogInUser,
-	watchUserQuestion
-};
+export const userWatchers: any[] = [
+    watchUpdateUserPersonalInfo(),
+    watchIncreaseAnswersInUserRating(),
+    watchIncreaseQuestionsInUserRating(),
+    watchLogInUser(),
+    watchUserQuestion()
+];

@@ -1,47 +1,41 @@
-import { IQuestionInfo } from '../questions/question.model';
+import {IQuestionInfo} from '../questions/question.model';
 
 export interface IUser {
-	password: string;
-	personalData: IPersonalInfo;
+    password: string;
+    personalData: IPersonalInfo;
 }
 
 export interface IUserInfoInDB extends IUser {
-	id: string;
-	rating: IUserRating;
+    id: string;
+    rating: IUserRating;
 }
 
 export interface IUserInfo extends IUserInfoInDB {
-	questions: Array<IQuestionInfo>;
-}
-
-export interface IUserState {
-	user: IUserInfo | null;
-	isUserCreating: boolean;
-	isRegistered: boolean | null;
-	registrationError: string;
+    questions: Array<IQuestionInfo>;
 }
 
 export interface IUserLogInArgs {
-	email: string;
-	password: string;
+    email: string;
+    password: string;
 }
+
 export interface IUpdatePersonalInfoArgs {
-	personalData: IPersonalInfo;
-	id: string;
+    personalData: IPersonalInfo;
+    id: string;
 }
 
 export interface IPersonalInfo {
-	firstName: string;
-	lastName: string;
-	email: string;
-	progLanguages: string[];
-	workingPosition: string;
-	workExperience: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    progLanguages: string[];
+    workingPosition: string;
+    workExperience: string;
 }
 
 export interface IUserRating {
-	questionsTotal: number;
-	answersTotal: number;
-	answersAcceptedByOthers: number;
-	answersLikedByOthers: number;
+    questionsTotal: number;
+    answersTotal: number;
+    answersAcceptedByOthers: number;
+    answersLikedByOthers: number;
 }

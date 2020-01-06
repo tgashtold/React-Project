@@ -1,31 +1,31 @@
-import {
-	addLikeToAnswerAsync,
-	acceptAnswerAsync,
-	getQuestionAndAnswersAsync,
-	createAnswerAsync,
-	getAnswersFromRequestedPositionAsync
-} from './answer.worker';
-import { takeEvery } from 'redux-saga/effects';
-import { addLikeToAnswer, acceptAnswer, getQuestionAndAnswersByQuestionId, createAnswer, getAnswersFromRequestedPosition } from './';
+import {answerWorkers} from './answer.worker';
+import {takeEvery} from 'redux-saga/effects';
+import {answerActions} from './';
 
 function* watchCreateAnswer() {
-	yield takeEvery(createAnswer.call, createAnswerAsync);
+    yield takeEvery(answerActions.createAnswer.call, answerWorkers.createAnswerAsync);
 }
 
 function* watchAddLike() {
-	yield takeEvery(addLikeToAnswer.call, addLikeToAnswerAsync);
+    yield takeEvery(answerActions.addLikeToAnswer.call, answerWorkers.addLikeToAnswerAsync);
 }
 
 function* watchAcceptAnswer() {
-	yield takeEvery(acceptAnswer.call, acceptAnswerAsync);
+    yield takeEvery(answerActions.acceptAnswer.call, answerWorkers.acceptAnswerAsync);
 }
 
 function* watchGetQuestionAndAnswers() {
-	yield takeEvery(getQuestionAndAnswersByQuestionId.call, getQuestionAndAnswersAsync);
+    yield takeEvery(answerActions.getQuestionAndAnswersByQuestionId.call, answerWorkers.getQuestionAndAnswersAsync);
 }
 
 function* watchGetAnswersFromRequestedPosition() {
-	yield takeEvery(getAnswersFromRequestedPosition.call, getAnswersFromRequestedPositionAsync);
+    yield takeEvery(answerActions.getAnswersFromRequestedPosition.call, answerWorkers.getAnswersFromRequestedPositionAsync);
 }
 
-export { watchAcceptAnswer, watchAddLike, watchCreateAnswer, watchGetQuestionAndAnswers,watchGetAnswersFromRequestedPosition };
+export const answerWatchers: any[] = [
+    watchAcceptAnswer(),
+    watchAddLike(),
+    watchCreateAnswer(),
+    watchGetQuestionAndAnswers(),
+    watchGetAnswersFromRequestedPosition()
+];

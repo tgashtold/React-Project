@@ -1,31 +1,32 @@
 import React from 'react';
-import { UserRatingItem } from '../../../modules/users';
-import { IUserRating } from '../../../modules/users/user.model';
+import {UserRatingItem} from '../../../modules/users';
+import {IUserRating} from '../../../modules/users/user.model';
 
 interface IUserRatingProps {
-	userRating: IUserRating;
+    userRating: IUserRating;
 }
 
-interface IUserRatingState {}
+interface IUserRatingState {
+}
 
 export class UserRating extends React.Component<IUserRatingProps, IUserRatingState> {
-	render() {
-		return (
-			<div className="rating">
-				<UserRatingItem
-					ratingItemTitle={'My questions'}
-					ratingItemValue={this.props.userRating.questionsTotal}
-				/>
-				<UserRatingItem ratingItemTitle={'My answers'} ratingItemValue={this.props.userRating.answersTotal} />
-				<UserRatingItem
-					ratingItemTitle={'My answers liked by other users'}
-					ratingItemValue={this.props.userRating.answersLikedByOthers}
-				/>
-				<UserRatingItem
-					ratingItemTitle={'My answers accepted by other users'}
-					ratingItemValue={this.props.userRating.answersAcceptedByOthers}
-				/>
-			</div>
-		);
-	}
+    render() {
+        return (
+            <div className="rating">
+                <UserRatingItem
+                    ratingItemTitle={'My questions'}
+                    ratingItemValue={this.props.userRating.questionsTotal}
+                />
+                <UserRatingItem ratingItemTitle={'My answers'} ratingItemValue={this.props.userRating.answersTotal}/>
+                <UserRatingItem
+                    ratingItemTitle={'My answers liked by other users'}
+                    ratingItemValue={this.props.userRating.answersLikedByOthers}
+                />
+                <UserRatingItem
+                    ratingItemTitle={'My answers accepted by other users'}
+                    ratingItemValue={this.props.userRating.answersAcceptedByOthers}
+                />
+            </div>
+        );
+    }
 }

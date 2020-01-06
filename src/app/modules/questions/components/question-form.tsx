@@ -1,8 +1,7 @@
 import React from 'react';
-import {InputLabelWrapper, TextArea, Button, InputTags} from '../../common';
+import {Button, IChangedEventArgs, InputLabelWrapper, InputTags, TextArea} from '../../common';
 import {IUserInfo} from '../../users/user.model';
 import {IQuestion} from '../../questions/question.model';
-import {IChangedEventArgs} from '../../common';
 
 interface IQuestionFormProps {
     onSubmit: (question: IQuestion) => void;
@@ -49,7 +48,6 @@ export class QuestionForm extends React.Component<IQuestionFormProps, IQuestionF
     handleFormSubmit = (event: React.FormEvent) => {
         event.preventDefault();
 
-
         if (this.areFieldsCorrectlyFilled()) {
             const newQuestion: IQuestion = {
                 id: '',
@@ -58,7 +56,7 @@ export class QuestionForm extends React.Component<IQuestionFormProps, IQuestionF
                 creationDate: new Date(),
                 hashTags: this.state[this.textareaNames.topicTags]
                     ? this.state[this.textareaNames.topicTags].value
-                    :[],
+                    : [],
                 description: this.state[this.textareaNames.questionDescription].value,
                 isClosed: false
             };

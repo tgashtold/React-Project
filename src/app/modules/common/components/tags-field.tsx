@@ -18,12 +18,12 @@ export class TagsField extends React.Component<ITagsFieldProps, ITagsFieldState 
         this.state = {activeTag: this.props.activeTag}
     }
 
-
     handleTagClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         if (event.currentTarget.textContent) {
-
             const searchedTag: string = event.currentTarget.textContent.slice(1);
+
             this.setState({activeTag: searchedTag});
+
             this.props.onTagClick(searchedTag);
         }
     };

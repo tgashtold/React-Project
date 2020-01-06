@@ -1,100 +1,80 @@
-import {
-    createAnswer,
-    acceptAnswer,
-    addLikeToAnswer,
-    getQuestionAndAnswersByQuestionId,
-    getAnswersFromRequestedPosition
-} from './answer.action';
-import {defaultAnswerState} from './answer.state';
-import {IAnswerInfo, IAnswerState} from '../answers/answer.model';
+import {answerActions} from './answer.action';
+import {defaultAnswerState, IAnswerState} from './answer.state';
+import {AnswerService} from './answer.service';
 import {handleActions} from 'redux-actions';
 
 export const answerReducer = handleActions(
     {
-        [`${getAnswersFromRequestedPosition.request}`]: (state: IAnswerState, action: any): IAnswerState => ({
+        [`${answerActions.getAnswersFromRequestedPosition.request}`]: (state: IAnswerState, action: any): IAnswerState => ({
             ...state,
             gettingAnswerData: true
         }),
-        [`${getAnswersFromRequestedPosition.success}`]: (state: IAnswerState, action: any): IAnswerState => ({
+        [`${answerActions.getAnswersFromRequestedPosition.success}`]: (state: IAnswerState, action: any): IAnswerState => ({
             ...state,
             answers: [...action.payload],
             gettingAnswerData: false
         }),
-        [`${getAnswersFromRequestedPosition.error}`]: (state: IAnswerState, action: any): IAnswerState => ({
+        [`${answerActions.getAnswersFromRequestedPosition.error}`]: (state: IAnswerState, action: any): IAnswerState => ({
             ...state,
             gettingAnswerData: false,
         }),
-        [`${createAnswer.request}`]: (state: IAnswerState, action: any): IAnswerState => ({
+        [`${answerActions.createAnswer.request}`]: (state: IAnswerState, action: any): IAnswerState => ({
             ...state,
             gettingAnswerData: true
         }),
-        [`${createAnswer.success}`]: (state: IAnswerState, action: any): IAnswerState => ({
+        [`${answerActions.createAnswer.success}`]: (state: IAnswerState, action: any): IAnswerState => ({
             ...state,
             gettingAnswerData: false,
-            ...action.payload
-
+            answersTotalQty: state.answersTotalQty + 1,
+            answers: [action.payload, ...state.answers],
         }),
-        [`${createAnswer.error}`]: (state: IAnswerState, action: any): IAnswerState => ({
+        [`${answerActions.createAnswer.error}`]: (state: IAnswerState, action: any): IAnswerState => ({
             ...state,
             gettingAnswerData: false
         }),
-        [`${getQuestionAndAnswersByQuestionId.request}`]: (state: IAnswerState, action: any): IAnswerState => ({
+        [`${answerActions.getQuestionAndAnswersByQuestionId.request}`]: (state: IAnswerState, action: any): IAnswerState => ({
             ...state,
             gettingAnswerData: true
         }),
-        [`${getQuestionAndAnswersByQuestionId.success}`]: (state: IAnswerState, action: any): IAnswerState => ({
+        [`${answerActions.getQuestionAndAnswersByQuestionId.success}`]: (state: IAnswerState, action: any): IAnswerState => ({
             ...state,
             ...action.payload,
             isQuestionExist: true,
             gettingAnswerData: false
         }),
-        [`${getQuestionAndAnswersByQuestionId.error}`]: (state: IAnswerState, action: any): IAnswerState => ({
+        [`${answerActions.getQuestionAndAnswersByQuestionId.error}`]: (state: IAnswerState, action: any): IAnswerState => ({
             ...state,
             gettingAnswerData: false,
             isQuestionExist: false
         }),
-        [`${acceptAnswer.request}`]: (state: IAnswerState, action: any): IAnswerState => ({
+        [`${answerActions.acceptAnswer.request}`]: (state: IAnswerState, action: any): IAnswerState => ({
             ...state,
             gettingAnswerData: true
         }),
-        [`${acceptAnswer.success}`]: (state: IAnswerState, action: any): IAnswerState => {
-            const updatedAnswers: Array<IAnswerInfo> = state.answers.map((answer: IAnswerInfo) => {
-                if (answer.id === action.payload.updatedAnswer.id) {
-                    return {...action.payload}
-                } else {
-                    return answer;
-                }
-            });
+        [`${answerActions.acceptAnswer.success}`]: (state: IAnswerState, action: any): IAnswerState => {
             return {
                 ...state,
-                answers: updatedAnswers,
+                answers: AnswerService.updateAnswerInAnswersArr(state.answers, action.payload.updatedAnswer),
                 currentQuestion: action.payload.currentQuestion,
                 gettingAnswerData: false
             }
         },
-        [`${acceptAnswer.error}`]: (state: IAnswerState, action: any): IAnswerState => ({
+        [`${answerActions.acceptAnswer.error}`]: (state: IAnswerState, action: any): IAnswerState => ({
             ...state,
             gettingAnswerData: false
         }),
-        [`${addLikeToAnswer.request}`]: (state: IAnswerState, action: any): IAnswerState => ({
+        [`${answerActions.addLikeToAnswer.request}`]: (state: IAnswerState, action: any): IAnswerState => ({
             ...state,
             gettingAnswerData: true
         }),
-        [`${addLikeToAnswer.success}`]: (state: IAnswerState, action: any): IAnswerState => {
-            const updatedAnswers: Array<IAnswerInfo> = state.answers.map((answer: IAnswerInfo) => {
-                if (answer.id === action.payload.id) {
-                    return {...answer, ...action.payload}
-                } else {
-                    return answer;
-                }
-            });
+        [`${answerActions.addLikeToAnswer.success}`]: (state: IAnswerState, action: any): IAnswerState => {
             return {
                 ...state,
                 gettingAnswerData: false,
-                answers: [...updatedAnswers],
+                answers: AnswerService.updateAnswerInAnswersArr(state.answers, action.payload),
             }
         },
-        [`${addLikeToAnswer.error}`]: (state: IAnswerState, action: any): IAnswerState => ({
+        [`${answerActions.addLikeToAnswer.error}`]: (state: IAnswerState, action: any): IAnswerState => ({
             ...state,
             gettingAnswerData: false
         })

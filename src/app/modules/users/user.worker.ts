@@ -1,40 +1,34 @@
-import { createSagaWorker } from '../../services';
-import {
-	logInUser,
-	createUser,
-	updateUserPersonalInfo,
-	increaseAnswersQtyInUserRating,
-	increaseQuestionsQtyInUserRating
-} from './user.action';
-import { IUser, IUserLogInArgs, IUpdatePersonalInfoArgs } from './user.model';
+import {createSagaWorker} from '../../services';
+import {userActions} from './user.action';
+import {IUpdatePersonalInfoArgs, IUser, IUserLogInArgs} from './user.model';
 
-import { UserApi } from './';
+import {UserApi} from './';
 
 const logInUserRequest = (payload: IUserLogInArgs) => UserApi.getUserByEmailAndPassword(payload);
-const logInUserAsync = createSagaWorker(logInUserRequest, logInUser);
+const logInUserAsync = createSagaWorker(logInUserRequest, userActions.logInUser);
 
 const createUserRequest = (payload: IUser) => UserApi.addUser(payload);
-const createUserAsync = createSagaWorker(createUserRequest, createUser);
+const createUserAsync = createSagaWorker(createUserRequest, userActions.createUser);
 
 const updateUserPersonalInfoRequest = (payload: IUpdatePersonalInfoArgs) => UserApi.changeUserPersonalInfo(payload);
-const updateUserPersonalInfoAsync = createSagaWorker(updateUserPersonalInfoRequest, updateUserPersonalInfo);
+const updateUserPersonalInfoAsync = createSagaWorker(updateUserPersonalInfoRequest, userActions.updateUserPersonalInfo);
 
 const increaseAnswersQtyInUserRatingRequest = (userId: string) => UserApi.increaseAnswersQtyInRating(userId);
 const increaseAnswersQtyInUserRatingAsync = createSagaWorker(
-	increaseAnswersQtyInUserRatingRequest,
-	increaseAnswersQtyInUserRating
+    increaseAnswersQtyInUserRatingRequest,
+    userActions.increaseAnswersQtyInUserRating
 );
 
 const increaseQuestionsQtyInUserRatingRequest = (userId: string) => UserApi.increaseQuestionsQtyInRating(userId);
 const increaseQuestionsQtyInUserRatingAsync = createSagaWorker(
-	increaseQuestionsQtyInUserRatingRequest,
-	increaseQuestionsQtyInUserRating
+    increaseQuestionsQtyInUserRatingRequest,
+    userActions.increaseQuestionsQtyInUserRating
 );
 
-export {
-	updateUserPersonalInfoAsync,
-	logInUserAsync,
-	createUserAsync,
-	increaseAnswersQtyInUserRatingAsync,
-	increaseQuestionsQtyInUserRatingAsync
+export const userWorkers: any = {
+    updateUserPersonalInfoAsync,
+    logInUserAsync,
+    createUserAsync,
+    increaseAnswersQtyInUserRatingAsync,
+    increaseQuestionsQtyInUserRatingAsync
 };

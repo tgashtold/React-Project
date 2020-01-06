@@ -1,36 +1,22 @@
-import { IUserInfo } from '../users/user.model';
+import {IUserInfo} from '../users/user.model';
 
 export interface IQuestion {
-	id: string;
-	author: IUserInfo;
-	title: string;
-	hashTags: Array<string>;
-	creationDate: Date;
-	description: string;
-	isClosed: boolean;
-}
-
-export interface IQuestionState {
-	questions: IQuestionInfo[];
-	isDataLoading: boolean;
-	tags: Array<string>;
-	isFilterProcess: boolean;
+    id: string;
+    author: IUserInfo;
+    title: string;
+    hashTags: Array<string>;
+    creationDate: Date;
+    description: string;
+    isClosed: boolean;
 }
 
 export interface IQuestionInfo extends IQuestion {
-	answersQty: number;
-	latestAnswerDate: Date | null;
-
-}
-
-export interface IQuestionCreationInfo {
-	author: IUserInfo;
-	title: string;
-	description: string;
+    answersQty: number;
+    latestAnswerDate: Date | null;
 }
 
 export interface IUpdateQuestionAnswersArgs {
-	questionId: string;
-	newAnswerDate: Date;
+    questionId: string;
+    newAnswerDate: Date;
 }
 

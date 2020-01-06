@@ -1,8 +1,15 @@
-import { IQuestionState } from './question.model';
+import {IQuestionInfo} from './question.model';
+
+export interface IQuestionState {
+    questions: IQuestionInfo[];
+    tags: Array<string>;
+    isFilterProcess: boolean;
+    isDataLoading: boolean;
+}
 
 export const defaultQuestionState: IQuestionState = {
-	questions: [],
-	isDataLoading: false,
-	isFilterProcess: false,
-	tags: []
+    questions: [],
+    tags: [],
+    isFilterProcess: false,
+    isDataLoading: false,
 };

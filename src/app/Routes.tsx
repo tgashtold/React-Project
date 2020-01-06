@@ -4,12 +4,12 @@ import {
     AnswersPage,
     CreateQuestionPage,
     Error404,
-    QuestionsListPage,
-    UserInfoPage,
     MainPage,
-    RegistrationPage
+    QuestionsListPage,
+    RegistrationPage,
+    UserInfoPage
 } from './containers';
-import {Switch, Route} from 'react-router-dom';
+import {Route, Switch} from 'react-router-dom';
 
 interface IRoutesProps {
 }
@@ -24,8 +24,8 @@ class Routes extends React.Component<IRoutesProps, IRoutesState> {
                 <Route exact path={RoutesConfig.routes.mainPage} component={MainPage}/>
                 <Route exact path={RoutesConfig.routes.createQuestion} component={CreateQuestionPage}/>
                 <Route exact path={RoutesConfig.routes.questionsList} component={QuestionsListPage}/>
-                <Route exact path={RoutesConfig.routes.questionsList_search} component={QuestionsListPage}/>
-                <Route path={RoutesConfig.routes.questionsList_tag} component={QuestionsListPage}/>
+                <Route exact path={RoutesConfig.routes.questionsListSearch} component={QuestionsListPage}/>
+                <Route path={RoutesConfig.routes.questionsListTag} component={QuestionsListPage}/>
                 <Route path={RoutesConfig.routes.registration} component={RegistrationPage}/>
                 <Route path={RoutesConfig.routes.userInfo} component={UserInfoPage}/>
                 <Route path={RoutesConfig.routes.answers} component={AnswersPage}/>

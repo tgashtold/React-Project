@@ -1,16 +1,15 @@
 import Database from '../../../data/Database';
-import {IQuestionInfo} from './question.model';
-import {IQuestion, IUpdateQuestionAnswersArgs} from './question.model';
-import {QuestionServices} from './question.services';
+import {IQuestion, IQuestionInfo, IUpdateQuestionAnswersArgs} from './question.model';
+import {QuestionService} from './question.service';
 
 export class QuestionsApi {
-    static tagNameForAllQuestions:string ='all';
+    static tagNameForAllQuestions: string = 'all';
 
     static async getActiveQuestions(): Promise<any> {
         const questions = await Database.questions;
 
         if (questions) {
-            return await QuestionServices.sortQuestionsByLatestCreationAndAnswerDate(questions);
+            return await QuestionService.sortQuestionsByLatestCreationAndAnswerDate(questions);
         } else {
             throw new Error('Unable to load questions');
         }
@@ -28,33 +27,33 @@ export class QuestionsApi {
             let isRequestRelevant: boolean = searchWordsArr.every((searchedWord: string) => {
                 return new RegExp(searchedWord, 'gi').test(question.title);
             });
-            
+
             if (isRequestRelevant) return question;
         });
 
-        return QuestionServices.sortQuestionsByLatestCreationAndAnswerDate(searchedQuestions);
+        return QuestionService.sortQuestionsByLatestCreationAndAnswerDate(searchedQuestions);
     }
 
     static async getQuestionsTags(): Promise<any> {
-        const questions: IQuestionInfo[]=Database.questions;
-        const tags: string[]= [];
-        for(let i=0; i<questions.length; i++){
-            questions[i].hashTags.forEach((tag:string)=>{
-                const isMatch: boolean = tags.some((tagInTagArr:string)=> tag.toLowerCase()===tagInTagArr.toLowerCase());
+        const questions: IQuestionInfo[] = Database.questions;
+        const tags: string[] = [];
+        for (let i = 0; i < questions.length; i++) {
+            questions[i].hashTags.forEach((tag: string) => {
+                const isMatch: boolean = tags.some((tagInTagArr: string) => tag.toLowerCase() === tagInTagArr.toLowerCase());
                 !isMatch && tags.push(tag);
             })
         }
-                    return [this.tagNameForAllQuestions, ...tags.sort()];
+        return [this.tagNameForAllQuestions, ...tags.sort()];
 
     }
 
     static async getQuestionsByTag(tag: string): Promise<any> {
-        if(tag.toLowerCase() ===this.tagNameForAllQuestions) return  QuestionServices.sortQuestionsByLatestCreationAndAnswerDate(Database.questions);
+        if (tag.toLowerCase() === this.tagNameForAllQuestions) return QuestionService.sortQuestionsByLatestCreationAndAnswerDate(Database.questions);
 
-       const questionsWithSearchedTag: IQuestionInfo[]= Database.questions.filter((question:IQuestionInfo)=>{
-           return question.hashTags.some((hashTag:string)=> tag.toLowerCase()===hashTag.toLowerCase())
-       });
-        return QuestionServices.sortQuestionsByLatestCreationAndAnswerDate(questionsWithSearchedTag);
+        const questionsWithSearchedTag: IQuestionInfo[] = Database.questions.filter((question: IQuestionInfo) => {
+            return question.hashTags.some((hashTag: string) => tag.toLowerCase() === hashTag.toLowerCase())
+        });
+        return QuestionService.sortQuestionsByLatestCreationAndAnswerDate(questionsWithSearchedTag);
 
     }
 
@@ -84,14 +83,6 @@ export class QuestionsApi {
         );
 
         return questions;
-    }
-
-    static async closeQuestion(id: string): Promise<any> {
-        const questionToClose = await Database.questions.find((question: IQuestionInfo) => question.id === id);
-
-        questionToClose.isClosed = true;
-
-        return this.changeQuestionInDbSync(questionToClose);
     }
 
     static closeQuestionSync(id: string): IQuestionInfo {

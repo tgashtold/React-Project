@@ -1,22 +1,18 @@
 import Database from '../../../data/Database';
 import {
-    IAnswerInfo,
     IAddLikeArgs,
+    IAnswer,
+    IAnswerInfo,
     IGetAswersFromPositionArgs,
-    IGetQuestionAndAswersArgs,
-    ICreateAnswerArgs
+    IGetQuestionAndAswersArgs
 } from './answer.model';
 import {QuestionsApi} from '../questions';
 import {UserApi} from '../users';
 import {IQuestionInfo} from '../questions/question.model';
 import {IUserInfoInDB} from '../users/user.model';
-import {AnswerServices} from './answer.services';
+import {AnswerService} from './answer.service';
 
 export class AnswerApi {
-    static async getAnswers(): Promise<any> {
-        return await Database.answers;
-    }
-
     static getAnswerById(answerId: string): IAnswerInfo {
         return Database.answers.find(
             (answer: IAnswerInfo) => answer.id === answerId
@@ -43,7 +39,7 @@ export class AnswerApi {
             (answer: IAnswerInfo) => questionId === answer.question.id
         );
 
-        return AnswerServices.sortAnswersByCreationDate(answers);
+        return AnswerService.sortAnswersByCreationDate(answers);
     }
 
     static async acceptAnswerByIdAndUpdateAuthorRating(answerId: string): Promise<any> {
@@ -85,10 +81,9 @@ export class AnswerApi {
         return answerToAddLike;
     }
 
-
-    static async addAnswer(data: ICreateAnswerArgs): Promise<any> {
+    static async addAnswer(answer: IAnswer): Promise<any> {
         const createdAnswer: IAnswerInfo = {
-            ...data.answer,
+            ...answer,
             id: Math.random().toString().slice(5, 15),
             likes: {
                 quantity: 0,
@@ -102,12 +97,7 @@ export class AnswerApi {
         });
         await Database.answers.push(createdAnswer);
 
-        const answers: Array<IAnswerInfo> = this.getSortedAnswersByQuestionId(data.answer.question.id);
-
-        return await {
-            answers: answers.slice(0, data.answersCountPerPage),
-            answersTotalQty: answers.length,
-        };
+        return await createdAnswer;
     }
 
     static async getQuestionWithAnswersByQuestionId(requestData: IGetQuestionAndAswersArgs): Promise<any> {
