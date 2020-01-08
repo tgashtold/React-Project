@@ -1,13 +1,12 @@
 import React from 'react';
 import {questionActions, QuestionTemplate} from '../modules/questions';
-import {ButtonLink, SearchFrom, TagsField} from '../modules/common';
+import {ButtonLink, Loader, SearchFrom, TagsField} from '../modules/common';
 import {IUserInfo} from '../modules/users/user.model';
 import {IQuestionInfo} from '../modules/questions/question.model';
 import {connect} from 'react-redux';
 import RoutesConfig from '../config/Routes.config';
 import {IAppState} from '../state';
-import loader from '../../assets/images/loader.gif';
-import {RouteComponentProps} from 'react-router-dom';
+import {Redirect, RouteComponentProps} from 'react-router-dom';
 import {RouteService} from '../services';
 
 interface IQuestionsParams {
@@ -45,16 +44,16 @@ class QuestionsList extends React.Component<RouteComponentProps<IQuestionsParams
             activeTag: this.props.match.params.tag && !this.props.location.search
                 ? this.props.match.params.tag
                 : '',
-            searchedValue: RouteService.getSearchValueFromLoactionSearch(this.props.location.search) || '',
+            searchedValue: RouteService.getSearchValueFromLocationSearch(this.props.location.search) || '',
         };
     }
 
     componentWillMount() {
         const searchedTag: string | undefined = this.props.match.params.tag;
         const searchedText: string | undefined = this.props.location.search;
-console.log('rerender')
+
         if (searchedText) {
-            this.props.searchQuestions(RouteService.getSearchValueFromLoactionSearch(searchedText));
+            this.props.searchQuestions(RouteService.getSearchValueFromLocationSearch(searchedText));
         } else if (searchedTag && !searchedText) {
             this.props.getQuestionsByTag(searchedTag);
         } else {
@@ -92,6 +91,20 @@ console.log('rerender')
         this.setState({activeTag: tagName, searchedValue: ''});
     };
 
+    handleTagFieldRedirect = () => {
+        if (this.state.activeTag.length > 0) {
+            return <Redirect to={RouteService.getQuestionsTagRoute(this.state.activeTag)}/>
+        }
+    };
+
+    handleSearchFieldRedirect = () => {
+        if (this.state.searchedValue.length > 0 && !this.props.isFilterProcess) {
+            return <Redirect to={RouteService.getQuestionsSearchRoute(this.state.searchedValue)}/>;
+        } else {
+            return <Redirect to={RoutesConfig.routes.questionsList}/>;
+        }
+    };
+
     render() {
         return (
             <div className="questions-wrapper">
@@ -100,13 +113,12 @@ console.log('rerender')
                     <SearchFrom
                         isActive={!this.props.isFilterProcess}
                         searchedValue={this.state.searchedValue}
-                        basicRoute={RoutesConfig.routes.questionsList}
-                        searchRoute={RouteService.getQuestionsSearchRoute()}
                         onSubmit={this.handleSearchFormSubmit}
-                    />
-                    {this.props.isQuestionUploading
-                        ? <img src={loader} alt="Loading ..."/>
-                        : this.renderQuestions()}
+                    >{this.handleSearchFieldRedirect()}
+                    </SearchFrom>
+                    <Loader isActive={this.props.isQuestionUploading}>
+                        {this.renderQuestions()}
+                    </Loader>
                     {this.props.user
                         ? <div className="button-wrapper">
                             <ButtonLink
@@ -117,11 +129,12 @@ console.log('rerender')
                         : null}
                 </div>
                 <TagsField
-                    redirectBasicRoute={RoutesConfig.routes.questionsList}
                     activeTag={this.state.activeTag}
                     tags={this.props.tags}
                     onTagClick={this.handleTagClick}
-                />
+                >
+                    {this.handleTagFieldRedirect()}
+                </TagsField>
             </div>
         );
     }

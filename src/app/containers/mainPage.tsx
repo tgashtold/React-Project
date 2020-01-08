@@ -1,9 +1,9 @@
 import React, {Fragment} from 'react';
-import {LogInForm, UserWelcomeMessage, userActions} from '../modules/users';
+import {LogInForm, userActions, UserWelcomeMessage} from '../modules/users';
+import {Loader} from '../modules/common';
 import {IUserInfo, IUserLogInArgs} from '../modules/users/user.model';
 import {connect} from 'react-redux';
 import {IAppState} from '../state';
-import loader from '../../assets/images/loader.gif';
 
 interface IMainPageStateProps {
     user: IUserInfo | null;
@@ -47,13 +47,14 @@ class HomePage extends React.Component<IMainPageProps, IMainPageState> {
 
     render() {
         return (
-            <div className="login-wrapper">
-                {this.props.isDataLoading && <img src={loader} alt="Loading ..."/>}
-                {this.props.isRegistered === true && this.props.user && !this.props.isDataLoading
-                    ? this.getUserWelcomeTemplate(this.props.user)
-                    : this.getLogInTemplate()
-                }
-            </div>
+            <Loader isActive={this.props.isDataLoading}>
+                <div className="login-wrapper">
+                    {this.props.isRegistered === true && this.props.user
+                        ? this.getUserWelcomeTemplate(this.props.user)
+                        : this.getLogInTemplate()
+                    }
+                </div>
+            </Loader>
         );
     }
 }
@@ -73,4 +74,3 @@ const mapDispatchToProps = (dispatch: any): IMainPageDispatchProps => {
 };
 
 export const MainPage = connect(mapStateToProps, mapDispatchToProps)(HomePage);
-

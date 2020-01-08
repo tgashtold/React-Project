@@ -5,7 +5,7 @@ export class RouteService {
         window.location.pathname = RoutesConfig.routes.error;
     }
 
-    static getSearchValueFromLoactionSearch(locationSearchText: string): string {
+    static getSearchValueFromLocationSearch(locationSearchText: string): string {
         return locationSearchText.slice(3);
     }
 
@@ -13,8 +13,12 @@ export class RouteService {
         return `${RoutesConfig.routes.answers.slice(0, -3)}${questionId}`;
     }
 
-    static getQuestionsSearchRoute(): string {
-        return RoutesConfig.routes.questionsListSearch.slice(0, -8);
+    static getQuestionsSearchRoute(searchedText: string): string {
+        return `${RoutesConfig.routes.questionsListSearch.slice(0, -8)}${searchedText}`;
+    }
+
+    static getQuestionsTagRoute(tag: string): string {
+        return `${RoutesConfig.routes.questionsList}/${tag}`;
     }
 
     static getPathToUserInfoPage(): string {

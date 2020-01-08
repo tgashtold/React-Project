@@ -1,12 +1,9 @@
 import React from 'react';
 import {Button} from '../../../common';
-import {Redirect} from 'react-router-dom';
 
 interface ISearchFormProps {
     onSubmit: (searchText: string) => void;
     searchedValue: string;
-    searchRoute: string;
-    basicRoute: string;
     isActive?: boolean | null;
 }
 
@@ -55,10 +52,7 @@ export class SearchFrom extends React.Component<ISearchFormProps, ISearchFormSta
                     className={'searcher__field'}
                     type="search"
                 />
-                {this.state.searchValue.length > 0 && this.props.isActive !== false
-                    ? <Redirect to={`${this.props.searchRoute}${this.state.searchValue}`}/>
-                    : <Redirect to={`${this.props.basicRoute}`}/>
-                }
+                {this.props.children}
                 <Button buttonTitle={'Search'}/>
             </form>
         );

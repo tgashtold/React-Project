@@ -18,6 +18,9 @@ function* watchGetQuestionAndAnswers() {
     yield takeEvery(answerActions.getQuestionAndAnswersByQuestionId.call, answerWorkers.getQuestionAndAnswersAsync);
 }
 
+function* watchGetUpdatedQuestionAndAnswers() {
+    yield takeEvery(answerActions.getUpdatedQuestionAndAnswersByQuestionId.call, answerWorkers.getUpdatedQuestionAndAnswersAsync);
+}
 function* watchGetAnswersFromRequestedPosition() {
     yield takeEvery(answerActions.getAnswersFromRequestedPosition.call, answerWorkers.getAnswersFromRequestedPositionAsync);
 }
@@ -27,5 +30,6 @@ export const answerWatchers: any[] = [
     watchAddLike(),
     watchCreateAnswer(),
     watchGetQuestionAndAnswers(),
-    watchGetAnswersFromRequestedPosition()
+    watchGetAnswersFromRequestedPosition(),
+    watchGetUpdatedQuestionAndAnswers()
 ];

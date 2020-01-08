@@ -1,5 +1,5 @@
 import React from 'react';
-import {IChangedEventArgs} from '../../../common';
+import {IChangedEventArgs} from '../../../index';
 
 interface ITextareaProps {
     onChanged: (values: IChangedEventArgs) => void;

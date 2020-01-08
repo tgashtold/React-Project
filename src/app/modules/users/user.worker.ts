@@ -1,8 +1,10 @@
 import {createSagaWorker} from '../../services';
 import {userActions} from './user.action';
 import {IUpdatePersonalInfoArgs, IUser, IUserLogInArgs} from './user.model';
+import { put, take} from 'redux-saga/effects';
 
 import {UserApi} from './';
+import {answerActions} from "../answers";
 
 const logInUserRequest = (payload: IUserLogInArgs) => UserApi.getUserByEmailAndPassword(payload);
 const logInUserAsync = createSagaWorker(logInUserRequest, userActions.logInUser);
@@ -13,11 +15,20 @@ const createUserAsync = createSagaWorker(createUserRequest, userActions.createUs
 const updateUserPersonalInfoRequest = (payload: IUpdatePersonalInfoArgs) => UserApi.changeUserPersonalInfo(payload);
 const updateUserPersonalInfoAsync = createSagaWorker(updateUserPersonalInfoRequest, userActions.updateUserPersonalInfo);
 
-const increaseAnswersQtyInUserRatingRequest = (userId: string) => UserApi.increaseAnswersQtyInRating(userId);
-const increaseAnswersQtyInUserRatingAsync = createSagaWorker(
-    increaseAnswersQtyInUserRatingRequest,
-    userActions.increaseAnswersQtyInUserRating
-);
+function* increaseAnswersQtyInUserRatingAsync(action: any) {
+    try {
+        yield take(answerActions.createAnswer.success);
+        yield put(userActions.increaseAnswersQtyInUserRating.request());
+
+        const result = yield UserApi.increaseAnswersQtyInRating(action.payload);
+
+        yield put(userActions.increaseAnswersQtyInUserRating.success(result));
+        
+        console.log('finish updating rating');
+    } catch (error) {
+        yield put(userActions.increaseAnswersQtyInUserRating.error(error.message));
+    }
+};
 
 const increaseQuestionsQtyInUserRatingRequest = (userId: string) => UserApi.increaseQuestionsQtyInRating(userId);
 const increaseQuestionsQtyInUserRatingAsync = createSagaWorker(

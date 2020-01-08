@@ -1,12 +1,11 @@
 import React from 'react';
 import {RegistrationForm, userActions} from '../modules/users';
 import {IUser, IUserInfo} from '../modules/users/user.model';
-import {FormWrapper} from '../modules/common';
+import {FormWrapper, Loader} from '../modules/common';
 import {connect} from 'react-redux';
 import {IAppState} from '../state';
 import {RouteService} from '../services';
 import {Redirect} from 'react-router-dom';
-import loader from '../../assets/images/loader.gif';
 
 interface IRegistrationStateProps {
     user: IUserInfo | null;
@@ -30,18 +29,19 @@ class Registration extends React.Component<IRegistrationProps, IRegistrationStat
     };
 
     render() {
+        if (this.props.user) {
+            return <Redirect to={`${RouteService.getPathToUserInfoPage()}${this.props.user.id}`}/>;
+        }
+
         return (
             <FormWrapper formTitle={'Registration form'}>
-                <RegistrationForm
-                    errorText={this.props.registrationError}
-                    onSubmit={this.handleFormSubmit}
-                    formBtnTitle={'Register'}
-                />
-                {this.props.isRegistrationProcess && <img src={loader} alt="Loading ..."/>}
-                {this.props.user && !this.props.isRegistrationProcess
-                    ? <Redirect to={`${RouteService.getPathToUserInfoPage()}${this.props.user.id}`}/>
-                    : ''
-                }
+                <Loader isActive={this.props.isRegistrationProcess}>
+                    <RegistrationForm
+                        errorText={this.props.registrationError}
+                        onSubmit={this.handleFormSubmit}
+                        formBtnTitle={'Register'}
+                    />
+                </Loader>
             </FormWrapper>
         );
     }
@@ -62,5 +62,3 @@ const mapStateToProps = (state: IAppState): IRegistrationStateProps => {
 };
 
 export const RegistrationPage = connect(mapStateToProps, mapDispatchToProps)(Registration);
-
-

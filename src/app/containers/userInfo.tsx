@@ -68,12 +68,12 @@ class UserInfo extends React.Component<IUserInfoProps, IUserInfoState> {
     };
 
     render() {
+        if (!this.props.user) {
+            return <Redirect to={`${RoutesConfig.routes.mainPage}`}/>
+        }
+
         return (
             <div className="user-info">
-                {!this.props.user
-                    ? <Redirect to={`${RoutesConfig.routes.mainPage}`}/>
-                    : ''
-                }
                 <UserInfoSection sectionTitle={'Personal information'}>
                     {this.state.editPersonalInfo
                         ? this.renderEditablePersonalInfoField()

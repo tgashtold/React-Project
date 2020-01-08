@@ -47,6 +47,21 @@ export const answerReducer = handleActions(
             gettingAnswerData: false,
             isQuestionExist: false
         }),
+        [`${answerActions.getUpdatedQuestionAndAnswersByQuestionId.request}`]: (state: IAnswerState, action: any): IAnswerState => ({
+            ...state,
+            gettingAnswerData: true
+        }),
+        [`${answerActions.getUpdatedQuestionAndAnswersByQuestionId.success}`]: (state: IAnswerState, action: any): IAnswerState => ({
+            ...state,
+            ...action.payload,
+            isQuestionExist: true,
+            gettingAnswerData: false
+        }),
+        [`${answerActions.getUpdatedQuestionAndAnswersByQuestionId.error}`]: (state: IAnswerState, action: any): IAnswerState => ({
+            ...state,
+            gettingAnswerData: false,
+            isQuestionExist: false
+        }),
         [`${answerActions.acceptAnswer.request}`]: (state: IAnswerState, action: any): IAnswerState => ({
             ...state,
             gettingAnswerData: true

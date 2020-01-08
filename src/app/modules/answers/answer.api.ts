@@ -106,6 +106,7 @@ export class AnswerApi {
         if (!question) {
             throw new Error('No such question');
         }
+
         const answers: Array<IAnswerInfo> = this.getSortedAnswersByQuestionId(requestData.questionId);
 
         return {

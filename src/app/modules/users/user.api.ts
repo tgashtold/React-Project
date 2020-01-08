@@ -26,8 +26,9 @@ export class UserApi {
     }
 
     static async increaseAnswersQtyInRating(userId: string): Promise<any> {
-        const userInDb: IUserInfoInDB = await this.getUserById(userId);
+        const userInDb: IUserInfoInDB = this.getUserById(userId);
         userInDb.rating.answersTotal += 1;
+
         return await {
             ...this.updateUser(userInDb),
             questions: QuestionsApi.getQuestionsByAuthorId(userId)

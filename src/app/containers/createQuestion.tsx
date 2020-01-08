@@ -1,5 +1,5 @@
 import React from 'react';
-import {FormWrapper} from '../modules/common';
+import {FormWrapper, Loader} from '../modules/common';
 import {questionActions, QuestionForm} from '../modules/questions';
 import {IUserInfo} from '../modules/users/user.model';
 import {userActions} from '../modules/users';
@@ -8,7 +8,6 @@ import {Redirect} from 'react-router-dom';
 import RoutesConfig from '../config/Routes.config';
 import {connect} from 'react-redux';
 import {IQuestion} from '../modules/questions/question.model';
-import loader from '../../assets/images/loader.gif';
 
 interface ICreateQuestionStateProps {
     user: IUserInfo | null;
@@ -35,18 +34,19 @@ class CreateQuestion extends React.Component<ICreateQuestionProps, ICreateQuesti
     };
 
     render() {
+        if (!this.props.user) {
+            return <Redirect to={`${RoutesConfig.routes.mainPage}`}/>;
+        }
+
+        if (this.props.isQuestionCreating) {
+            return <Redirect to={`${RoutesConfig.routes.questionsList}`}/>;
+        }
+
         return (
             <FormWrapper formTitle={'Create a question'}>
-                {!this.props.user
-                    ? <Redirect to={`${RoutesConfig.routes.mainPage}`}/>
-                    : ''}
-                {this.props.isQuestionCreating
-                    ? <img src={loader} alt="Loading ..."/>
-                    : <QuestionForm onSubmit={this.handleQuestionFormSubmit}/>
-                }
-                {this.props.isQuestionCreating
-                    ? <Redirect to={`${RoutesConfig.routes.questionsList}`}/>
-                    : ''}
+                <Loader isActive={this.props.isQuestionCreating}>
+                    <QuestionForm onSubmit={this.handleQuestionFormSubmit}/>
+                </Loader>
             </FormWrapper>
         );
     }
@@ -61,7 +61,8 @@ const mapStateToProps = (state: IAppState): ICreateQuestionStateProps => {
 
 const mapDispatchToProps = (dispatch: any): ICreateQuestionDispatchProps => {
     return {
-        increaseQuestionsQtyInUserRating: (userId: string) => dispatch(userActions.increaseQuestionsQtyInUserRating.call(userId)),
+        increaseQuestionsQtyInUserRating: (userId: string) =>
+            dispatch(userActions.increaseQuestionsQtyInUserRating.call(userId)),
         createQuestion: (question: IQuestion) => dispatch(questionActions.createQuestion.call(question))
     };
 };
