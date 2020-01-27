@@ -5,11 +5,13 @@ export interface IUserState {
     isUserCreating: boolean;
     isRegistered: boolean | null;
     registrationError: string;
+    logInError: string
 }
 
 export const defaultUserState: IUserState = {
     user: null,
     isUserCreating: false,
     isRegistered: null,
-    registrationError: ''
+    registrationError: '',
+    logInError: ''
 };

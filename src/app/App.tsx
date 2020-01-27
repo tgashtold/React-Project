@@ -9,6 +9,7 @@ import {IAppState} from './state';
 
 interface IAppDispatchProps {
     logOutUser: () => any;
+    isAuthorized:()=>any;
 }
 
 interface IAppStateProps {
@@ -19,8 +20,12 @@ interface IAppProps extends IAppDispatchProps, IAppStateProps {
 }
 
 class AppComponent extends React.Component<IAppProps> {
-    render() {
-        return (
+    componentWillMount(){
+        this.props.isAuthorized();
+}
+
+    render() { 
+         return (
             <div className="App content">
                 <Header user={this.props.user} onLogOut={this.props.logOutUser}/>
                 <main className="main">
@@ -39,7 +44,9 @@ const mapStateToProps = (store: IAppState): IAppStateProps => {
 
 const mapDispatchToProps = (dispatch: any): IAppDispatchProps => {
     return {
-        logOutUser: () => dispatch(userActions.logOutUser())
+        logOutUser: () => dispatch(userActions.logOutUser.call()),
+        isAuthorized: () =>
+        dispatch(userActions.isUserAuthorized.call()), 
     };
 };
 

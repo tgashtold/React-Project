@@ -21,10 +21,17 @@ interface IRegistrationProps extends IRegistrationStateProps, IRegistrationDispa
 }
 
 interface IRegistrationState {
+    userDataForRegistration: IUser | null
 }
 
 class Registration extends React.Component<IRegistrationProps, IRegistrationState> {
+    constructor(props: IRegistrationProps) {
+        super(props);
+        this.state = {userDataForRegistration: null}
+    }
+
     handleFormSubmit = (user: IUser) => {
+        this.setState({userDataForRegistration: user})
         this.props.createUser(user);
     };
 
@@ -37,10 +44,14 @@ class Registration extends React.Component<IRegistrationProps, IRegistrationStat
             <FormWrapper formTitle={'Registration form'}>
                 <Loader isActive={this.props.isRegistrationProcess}>
                     <RegistrationForm
+                        user={this.state.userDataForRegistration}
+                        insertValue={!!this.props.registrationError}
                         errorText={this.props.registrationError}
                         onSubmit={this.handleFormSubmit}
                         formBtnTitle={'Register'}
+                        registrationProcess={true}
                     />
+
                 </Loader>
             </FormWrapper>
         );

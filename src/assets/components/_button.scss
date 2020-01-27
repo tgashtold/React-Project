@@ -11,8 +11,9 @@
 	vertical-align: center;
 	&-wrapper {
 		display: flex;
-		justify-content: center;
-		margin-top: 50px;
+		margin-bottom: 40px;
+		width: 100%;
+
 	}
 	&:disabled {
 		background-color: $disabledBlue;

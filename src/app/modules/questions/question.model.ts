@@ -15,8 +15,5 @@ export interface IQuestionInfo extends IQuestion {
     latestAnswerDate: Date | null;
 }
 
-export interface IUpdateQuestionAnswersArgs {
-    questionId: string;
-    newAnswerDate: Date;
-}
+
 

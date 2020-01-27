@@ -14,7 +14,8 @@ import {IUser, IUserInfo} from '../../../modules/users/user.model';
 interface IRegistrationFormProps {
     onSubmit: (user: IUser) => void;
     formBtnTitle: string;
-    user?: IUserInfo;
+    user?:  IUser| IUserInfo |null;
+    registrationProcess?: boolean;
     errorText?: string;
     insertValue?: boolean;
     formSpecificClassName?: string;
@@ -33,7 +34,7 @@ export class RegistrationForm extends React.Component<IRegistrationFormProps, IR
         password: 'UserPassword',
         workPosition: 'WorkPosition',
         workExperience: 'WorkExperience',
-        progLanguages: 'ProgLanguages',
+        progLanguages: 'ProgLanguages'
     };
     protected requiredFieldsNames = [
         this.inputsNames.firstName,
@@ -53,8 +54,8 @@ export class RegistrationForm extends React.Component<IRegistrationFormProps, IR
                 value: this.props.insertValue && this.props.user ? this.props.user.personalData.email : ''
             },
             [this.inputsNames.password]: {
-                isValid: !!this.props.insertValue && !!this.props.user,
-                value: this.props.insertValue && this.props.user ? this.props.user.password : ''
+                isValid: !this.props.registrationProcess,
+                value: ''
             },
             [this.inputsNames.firstName]: {
                 isValid: !!this.props.insertValue && !!this.props.user,
@@ -84,8 +85,7 @@ export class RegistrationForm extends React.Component<IRegistrationFormProps, IR
                         ? this.props.user.personalData.progLanguages.length > 0
                         : false,
                 value: this.props.insertValue && this.props.user ? this.props.user.personalData.progLanguages : []
-            },
-
+            }
         };
     }
 
@@ -182,7 +182,8 @@ export class RegistrationForm extends React.Component<IRegistrationFormProps, IR
                     <InputTags
                         name={this.inputsNames.progLanguages}
                         tags={this.state[`${this.inputsNames.progLanguages}`].value}
-                        onChanged={this.inputChangesHandler}/>
+                        onChanged={this.inputChangesHandler}
+                    />
                 </InputLabelWrapper>
 
                 <InputLabelWrapper isRequiredField={false} labelText={'Working position'}>

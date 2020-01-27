@@ -7,6 +7,9 @@ export interface IAnswerState {
     gettingAnswerData: boolean;
     isQuestionExist: boolean;
     answersTotalQty: number;
+    answerCreationError: string;
+    getAnswersError: string;
+    updateAnswersError: string
 }
 
 export const defaultAnswerState: IAnswerState = {
@@ -15,4 +18,7 @@ export const defaultAnswerState: IAnswerState = {
     gettingAnswerData: false,
     isQuestionExist: true,
     answersTotalQty: 0,
+    answerCreationError: '',
+    getAnswersError: '',
+    updateAnswersError: ''
 };

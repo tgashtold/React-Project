@@ -1,123 +1,103 @@
-import Database from '../../../data/Database';
-import {IQuestion, IQuestionInfo, IUpdateQuestionAnswersArgs} from './question.model';
+import {IQuestion, IQuestionInfo} from './question.model';
 import {QuestionService} from './question.service';
 
 export class QuestionsApi {
     static tagNameForAllQuestions: string = 'all';
 
-    static async getActiveQuestions(): Promise<any> {
-        const questions = await Database.questions;
+    static async addQuestion(questionInfo: IQuestion): Promise<any> {
+        try {
+            let response = await fetch('http://localhost:5000/question/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'x-access-token': localStorage.getItem('Authorization') || ''
+                },
+                body: JSON.stringify(questionInfo)
+            });
 
-        if (questions) {
-            return await QuestionService.sortQuestionsByLatestCreationAndAnswerDate(questions);
-        } else {
-            throw new Error('Unable to load questions');
+            if (+response.status.toString().slice(0, 1) !== 2) {
+                throw new Error('Error! Failed to create question. Please try again');
+            }
+
+            let result = await response.json();
+
+            const question: IQuestionInfo = QuestionService.adoptQuestionDates(result);
+
+            return question;
+        } catch (error) {
+            throw new Error(error.message);
         }
     }
 
-    static async getQuestionById(id: string): Promise<any> {
-        return await Database.questions.find((question: IQuestionInfo) => question.id === id);
-    }
+    static async getActiveQuestions(): Promise<any> {
+        try {
+            let response = await fetch(`http://localhost:5000/question/all`);
 
+            let result = await response.json();
 
-    static async searchQuestionsByTitle(searchText: string): Promise<any> {
-        const searchWordsArr = searchText.split(' ').map((word) => word.trim());
+            if (result.statusCode) {
+                throw new Error(`Error ${result.statusCode}. ${result.message}`);
+            }
 
-        const searchedQuestions: Array<IQuestionInfo> = await Database.questions.filter((question: IQuestionInfo) => {
-            let isRequestRelevant: boolean = searchWordsArr.every((searchedWord: string) => {
-                return new RegExp(searchedWord, 'gi').test(question.title);
-            });
+            const questions: IQuestionInfo[] = QuestionService.adoptQuestionsDates(result);
 
-            if (isRequestRelevant) return question;
-        });
-
-        return QuestionService.sortQuestionsByLatestCreationAndAnswerDate(searchedQuestions);
+            return QuestionService.sortQuestionsByLatestCreationAndAnswerDate(questions);
+        } catch (error) {
+            throw new Error(error.message);
+        }
     }
 
     static async getQuestionsTags(): Promise<any> {
-        const questions: IQuestionInfo[] = Database.questions;
-        const tags: string[] = [];
-        for (let i = 0; i < questions.length; i++) {
-            questions[i].hashTags.forEach((tag: string) => {
-                const isMatch: boolean = tags.some((tagInTagArr: string) => tag.toLowerCase() === tagInTagArr.toLowerCase());
-                !isMatch && tags.push(tag);
-            })
-        }
-        return [this.tagNameForAllQuestions, ...tags.sort()];
+        try {
+            let response = await fetch(`http://localhost:5000/question/tags`);
 
+            let tags = await response.json();
+
+            return [this.tagNameForAllQuestions, ...tags.sort()];
+        } catch (error) {
+            throw new Error('Unable to load hashtags');
+        }
     }
 
     static async getQuestionsByTag(tag: string): Promise<any> {
-        if (tag.toLowerCase() === this.tagNameForAllQuestions) return QuestionService.sortQuestionsByLatestCreationAndAnswerDate(Database.questions);
+        try {
+            let response = await fetch(`http://localhost:5000/question/filtered/${tag}`);
 
-        const questionsWithSearchedTag: IQuestionInfo[] = Database.questions.filter((question: IQuestionInfo) => {
-            return question.hashTags.some((hashTag: string) => tag.toLowerCase() === hashTag.toLowerCase())
-        });
-        return QuestionService.sortQuestionsByLatestCreationAndAnswerDate(questionsWithSearchedTag);
+            let result = await response.json();
 
-    }
+            if (result.statusCode) {
+                throw new Error(`Error ${result.statusCode}. ${result.message}`);
+            }
 
-    static async addNewQuestionAnswer(data: IUpdateQuestionAnswersArgs): Promise<any> {
-        const questionToUpdate = await Database.questions.find(
-            (question: IQuestionInfo) => data.questionId === question.id
-        );
+            const questions: IQuestionInfo[] = QuestionService.adoptQuestionsDates(result);
 
-        questionToUpdate.latestAnswerDate = data.newAnswerDate;
-        questionToUpdate.answersQty += 1;
-
-        return this.changeQuestionInDbSync(questionToUpdate);
-    }
-
-    static addNewQuestionAnswerSync(data: IUpdateQuestionAnswersArgs): IQuestionInfo {
-        const questionToUpdate = Database.questions.find((question: IQuestionInfo) => data.questionId === question.id);
-
-        questionToUpdate.latestAnswerDate = data.newAnswerDate;
-        questionToUpdate.answersQty += 1;
-
-        return this.changeQuestionInDbSync(questionToUpdate);
-    }
-
-    static getQuestionsByAuthorId(id: string): Array<IQuestionInfo> {
-        const questions: Array<IQuestionInfo> = Database.questions.filter(
-            (question: IQuestionInfo) => question.author.id === id
-        );
-
-        return questions;
-    }
-
-    static closeQuestionSync(id: string): IQuestionInfo {
-        const questionToClose = Database.questions.find((question: IQuestionInfo) => question.id === id);
-
-        questionToClose.isClosed = true;
-
-        return this.changeQuestionInDbSync(questionToClose);
-    }
-
-    static async addQuestion(questionInfo: IQuestion): Promise<any> {
-        const newQuestion: IQuestionInfo = {
-            ...questionInfo,
-            answersQty: 0,
-            latestAnswerDate: null
-        };
-        newQuestion.id = Math.random().toString().slice(5, 15);
-
-        const sendToDB = await Database.questions.push(newQuestion);
-
-        if (sendToDB) {
-            return newQuestion;
-        } else {
-            throw new Error('Unable to create new question');
+            return QuestionService.sortQuestionsByLatestCreationAndAnswerDate(questions);
+        } catch (error) {
+            throw new Error(error.message);
         }
     }
 
-    static async changeQuestion(changedQuestion: IQuestionInfo): Promise<any> {
-        return this.changeQuestionInDbSync(changedQuestion);
-    }
+    static async searchQuestionsByTitle(searchText: string): Promise<any> {
+        try {
+            if (searchText.trim().length > 0) {
+                let response = await fetch(`http://localhost:5000/question/search/${searchText}`);
 
-    static changeQuestionInDbSync(changedQuestion: IQuestionInfo): IQuestionInfo {
-        Database.questions = Database.questions.filter((question: IQuestionInfo) => question.id !== changedQuestion.id);
-        Database.questions.push(changedQuestion);
+                let result = await response.json();
 
-        return changedQuestion;
+                if (result.statusCode) {
+                    throw new Error(`Error ${result.statusCode}. ${result.message}`);
+                }
+
+                const questions: IQuestionInfo[] = QuestionService.adoptQuestionsDates(result);
+
+                return QuestionService.sortQuestionsByLatestCreationAndAnswerDate(questions);
+            }
+
+            if (searchText.trim().length === 0) {
+                return await this.getActiveQuestions();
+            }
+        } catch (error) {
+            throw new Error(error.message);
+        }
     }
 }

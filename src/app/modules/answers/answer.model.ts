@@ -25,13 +25,22 @@ export interface IGetQuestionAndAswersArgs {
     answersCountPerPage: number,
 }
 
+export interface IAcceptAnswerResponse {
+    currentQuestion: IQuestionInfo,
+    updatedAnswer: IAnswerInfo,
+}
+
 export interface IAnswerLikes {
     quantity: number;
     users: Array<IUserInfo>;
+ 
+
 }
 
 export interface IAddLikeArgs {
     answerId: string;
-    user: IUserInfo;
-
+    userId: string;
+    questionId: string;
+    answersCount: number;
+    answersStartNumber: number;
 }

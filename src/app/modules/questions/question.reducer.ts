@@ -1,22 +1,24 @@
 import {questionActions} from './question.action';
 import {defaultQuestionState, IQuestionState} from './question.state';
 import {handleActions} from 'redux-actions';
-import {QuestionService} from './';
 
 export const questionsReducer = handleActions(
     {
         [`${questionActions.getQuestionsByTag.request}`]: (state: IQuestionState, action: any): IQuestionState => ({
             ...state,
             isFilterProcess: true,
+            uploadingError: ''
         }),
         [`${questionActions.getQuestionsByTag.success}`]: (state: IQuestionState, action: any): IQuestionState => ({
             ...state,
             isFilterProcess: false,
-            questions: [...action.payload]
+            questions: [...action.payload],
+            uploadingError: ''
         }),
         [`${questionActions.getQuestionsByTag.error}`]: (state: IQuestionState, action: any): IQuestionState => ({
             ...state,
-            isFilterProcess: false
+            isFilterProcess: false,
+            uploadingError: action.payload
         }),
         [`${questionActions.getQuestionsTags.request}`]: (state: IQuestionState, action: any): IQuestionState => ({
             ...state,
@@ -33,73 +35,52 @@ export const questionsReducer = handleActions(
         }),
         [`${questionActions.searchQuestionsByTitle.request}`]: (state: IQuestionState, action: any): IQuestionState => ({
             ...state,
-            isDataLoading: true
+            isDataLoading: true,
+            uploadingError: ''
         }),
         [`${questionActions.searchQuestionsByTitle.success}`]: (state: IQuestionState, action: any): IQuestionState => ({
             ...state,
             isDataLoading: false,
-            questions: [...action.payload]
+            questions: [...action.payload],
+            uploadingError: ''
         }),
         [`${questionActions.searchQuestionsByTitle.error}`]: (state: IQuestionState, action: any): IQuestionState => ({
             ...state,
-            isDataLoading: false
+            isDataLoading: false,
+            uploadingError: action.payload
         }),
         [`${questionActions.createQuestion.request}`]: (state: IQuestionState, action: any): IQuestionState => ({
             ...state,
-            isDataLoading: true
+            isDataLoading: true,
+            creationError: ''
         }),
         [`${questionActions.createQuestion.success}`]: (state: IQuestionState, action: any): IQuestionState => ({
             ...state,
             isDataLoading: false,
-            questions: [...state.questions, action.payload]
+            questions: state.questions ? [...state.questions, action.payload] : [...action.payload],
+            creationError: ''
         }),
         [`${questionActions.createQuestion.error}`]: (state: IQuestionState, action: any): IQuestionState => ({
             ...state,
-            isDataLoading: false
+            isDataLoading: false,
+            creationError: action.payload
         }),
         [`${questionActions.getQuestions.request}`]: (state: IQuestionState, action: any): IQuestionState => ({
             ...state,
-            isDataLoading: true
+            isDataLoading: true,
+            uploadingError: ''
         }),
         [`${questionActions.getQuestions.success}`]: (state: IQuestionState, action: any): IQuestionState => ({
             ...state,
             questions: [...action.payload],
-            isDataLoading: false
+            isDataLoading: false,
+            uploadingError: ''
         }),
         [`${questionActions.getQuestions.error}`]: (state: IQuestionState, action: any): IQuestionState => ({
             ...state,
-            isDataLoading: false
+            isDataLoading: false,
+            uploadingError: action.payload
         }),
-        [`${questionActions.updateQuestion.request}`]: (state: IQuestionState, action: any): IQuestionState => ({
-            ...state,
-            isDataLoading: true
-        }),
-        [`${questionActions.updateQuestion.success}`]: (state: IQuestionState, action: any): IQuestionState => {
-            return {
-                ...state,
-                isDataLoading: false,
-                questions: [...QuestionService.updateQuestionsInState(state.questions, action.payload)]
-            };
-        },
-        [`${questionActions.updateQuestion.error}`]: (state: IQuestionState, action: any): IQuestionState => ({
-            ...state,
-            isDataLoading: false
-        }),
-        [`${questionActions.updateQuestionAnswersInfo.request}`]: (state: IQuestionState, action: any): IQuestionState => ({
-            ...state,
-            isDataLoading: true
-        }),
-        [`${questionActions.updateQuestionAnswersInfo.success}`]: (state: IQuestionState, action: any): IQuestionState => {
-            return {
-                ...state,
-                isDataLoading: false,
-                questions: [...QuestionService.updateQuestionsInState(state.questions, action.payload)]
-            };
-        },
-        [`${questionActions.updateQuestionAnswersInfo.error}`]: (state: IQuestionState, action: any): IQuestionState => ({
-            ...state,
-            isDataLoading: false
-        })
     },
     defaultQuestionState
 );

@@ -6,6 +6,8 @@ import {IUserLogInArgs} from '../../users/user.model';
 
 interface ILogInFormProps {
     onSubmit: (userLogInData: IUserLogInArgs) => void;
+    insertValue?: boolean;
+    values?: IUserLogInArgs
 }
 
 interface ILogInFormState {
@@ -20,8 +22,14 @@ export class LogInForm extends React.Component<ILogInFormProps, ILogInFormState 
     constructor(props: ILogInFormProps) {
         super(props);
         this.state = {
-            [this.inputsNames.email]: {},
-            [this.inputsNames.password]: {}
+            [this.inputsNames.email]: {
+                isValid: !!this.props.insertValue,
+                value: this.props.values && !!this.props.insertValue ? this.props.values.email : ''
+            },
+            [this.inputsNames.password]: {
+                isValid: !!this.props.insertValue,
+                value: this.props.values && !!this.props.insertValue ? this.props.values.password : ''
+            }
         };
     }
 
@@ -51,8 +59,10 @@ export class LogInForm extends React.Component<ILogInFormProps, ILogInFormState 
     render() {
         return (
             <form className="login__form" onSubmit={(e) => this.handleFormSubmit(e)} action="">
-                <InputEmail name={this.inputsNames.email} onChanged={this.inputChangesHandler}/>
-                <InputPassword name={this.inputsNames.password} onChanged={this.inputChangesHandler}/>
+                <InputEmail value={this.state[this.inputsNames.email].value} name={this.inputsNames.email}
+                            onChanged={this.inputChangesHandler}/>
+                <InputPassword value={this.state[this.inputsNames.password].value} name={this.inputsNames.password}
+                               onChanged={this.inputChangesHandler}/>
                 {this.props.children}
                 <div className="buttons-wrapper">
                     <Button disabled={this.isLoggedInBtnDisabled()} buttonTitle={'Log In'}/>

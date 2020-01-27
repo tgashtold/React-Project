@@ -15,10 +15,11 @@ interface IQuestionsParams {
 
 interface IQuestionsListStateProps {
     user: IUserInfo | null;
-    questions: Array<IQuestionInfo>;
+    questions: Array<IQuestionInfo> | null;
     isQuestionUploading: boolean;
     tags: Array<string>;
     isFilterProcess: boolean;
+    uploadingError: string
 }
 
 interface IQuestionsListDispatchProps {
@@ -64,7 +65,7 @@ class QuestionsList extends React.Component<RouteComponentProps<IQuestionsParams
     }
 
     getQuestionsTemplate = (): any => {
-        return this.props.questions.map((question: IQuestionInfo) => (
+        return this.props.questions && this.props.questions.map((question: IQuestionInfo) => (
             <QuestionTemplate
                 key={question.id}
                 question={question}
@@ -76,7 +77,7 @@ class QuestionsList extends React.Component<RouteComponentProps<IQuestionsParams
     };
 
     renderQuestions = (): any => {
-        return this.props.questions.length > 0
+        return this.props.questions && this.props.questions.length > 0
             ? this.getQuestionsTemplate()
             : <p className="info-message">no questions</p>;
     };
@@ -116,9 +117,6 @@ class QuestionsList extends React.Component<RouteComponentProps<IQuestionsParams
                         onSubmit={this.handleSearchFormSubmit}
                     >{this.handleSearchFieldRedirect()}
                     </SearchFrom>
-                    <Loader isActive={this.props.isQuestionUploading}>
-                        {this.renderQuestions()}
-                    </Loader>
                     {this.props.user
                         ? <div className="button-wrapper">
                             <ButtonLink
@@ -128,6 +126,12 @@ class QuestionsList extends React.Component<RouteComponentProps<IQuestionsParams
                         </div>
                         : null}
                 </div>
+                <Loader isActive={this.props.isQuestionUploading || !this.props.questions}>
+                    {this.props.uploadingError.length > 0
+                        ? <p className="error-message">{this.props.uploadingError}</p>
+                        : this.renderQuestions()}
+                </Loader>
+
                 <TagsField
                     activeTag={this.state.activeTag}
                     tags={this.props.tags}
@@ -147,7 +151,9 @@ const mapStateToProps = (state: IAppState): IQuestionsListStateProps => {
         isQuestionUploading: state.questions.isDataLoading,
         tags: state.questions.tags,
         isFilterProcess: state.questions.isFilterProcess,
+        uploadingError: state.questions.uploadingError
     };
+
 };
 
 const mapDispatchToProps = (dispatch: any): IQuestionsListDispatchProps => {

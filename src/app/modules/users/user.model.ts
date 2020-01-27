@@ -10,8 +10,11 @@ export interface IUserInfoInDB extends IUser {
     rating: IUserRating;
 }
 
-export interface IUserInfo extends IUserInfoInDB {
-    questions: Array<IQuestionInfo>;
+export interface IUserInfo {
+    id: string;
+    personalData: IPersonalInfo;
+    rating: IUserRating;
+    questions: IQuestionInfo[];
 }
 
 export interface IUserLogInArgs {

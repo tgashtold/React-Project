@@ -1,22 +1,26 @@
 import {createSagaWorker} from '../../services';
 import {questionActions, QuestionsApi,} from './';
-import {IQuestion, IQuestionInfo, IUpdateQuestionAnswersArgs} from './question.model';
+import {call, put} from 'redux-saga/effects';
+import RoutesConfig from '../../config/Routes.config';
+import {push} from 'connected-react-router'
 
-const createQuestionRequest = (payload: IQuestion) => QuestionsApi.addQuestion(payload);
-const createQuestionAsync = createSagaWorker(createQuestionRequest, questionActions.createQuestion);
+
+const createQuestionAsync = function* sagaWorker(action: any) {
+    try {
+        yield put(questionActions.createQuestion.request());
+        const result = yield call(QuestionsApi.addQuestion, action.payload);
+        yield put(questionActions.createQuestion.success(result));
+        yield put(push(RoutesConfig.routes.questionsList));
+    } catch (error) {
+        yield put(questionActions.createQuestion.error(error.message));
+    }
+};
 
 const getQuestionsRequest = () => QuestionsApi.getActiveQuestions();
 const getQuestionsAsync = createSagaWorker(getQuestionsRequest, questionActions.getQuestions);
 
 const searchQuestionsByTitleRequest = (payload: string) => QuestionsApi.searchQuestionsByTitle(payload);
 const searchQuestionsByTitleAsync = createSagaWorker(searchQuestionsByTitleRequest, questionActions.searchQuestionsByTitle);
-
-const updateQuestionRequest = (payload: IQuestionInfo) => QuestionsApi.changeQuestion(payload);
-const updateQuestionAsync = createSagaWorker(updateQuestionRequest, questionActions.updateQuestion);
-
-const updateQuestionAnswersInfoRequest = (payload: IUpdateQuestionAnswersArgs) =>
-    QuestionsApi.addNewQuestionAnswer(payload);
-const updateQuestionAnswersInfoAsync = createSagaWorker(updateQuestionAnswersInfoRequest, questionActions.updateQuestionAnswersInfo);
 
 const getQuestionsTagsRequest = () => QuestionsApi.getQuestionsTags();
 const getQuestionsTagsAsync = createSagaWorker(getQuestionsTagsRequest, questionActions.getQuestionsTags);
@@ -27,8 +31,6 @@ const getQuestionsByTagAsync = createSagaWorker(getQuestionsByTagRequest, questi
 export const questionWorkers: any = {
     createQuestionAsync,
     getQuestionsAsync,
-    updateQuestionAsync,
-    updateQuestionAnswersInfoAsync,
     searchQuestionsByTitleAsync,
     getQuestionsTagsAsync,
     getQuestionsByTagAsync

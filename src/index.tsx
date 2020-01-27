@@ -3,18 +3,18 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './app/App';
 import * as serviceWorker from './serviceWorker';
-import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { configureStore } from './app/State.config';
+import { configureStore, history } from './app/State.config';
 import { InitialState } from './app/state';
+import { ConnectedRouter } from 'connected-react-router';
 
 const state = configureStore(InitialState);
 
 ReactDOM.render(
 	<Provider store={state}>
-		<Router>
+		<ConnectedRouter history={history}>
 			<App />
-		</Router>
+		</ConnectedRouter>
 	</Provider>,
 	document.getElementById('root')
 );

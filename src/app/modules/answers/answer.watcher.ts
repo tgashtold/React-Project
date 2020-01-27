@@ -6,8 +6,8 @@ function* watchCreateAnswer() {
     yield takeEvery(answerActions.createAnswer.call, answerWorkers.createAnswerAsync);
 }
 
-function* watchAddLike() {
-    yield takeEvery(answerActions.addLikeToAnswer.call, answerWorkers.addLikeToAnswerAsync);
+function* watchAddLikeAndUpdateQuestionAndAnswers() {
+    yield takeEvery(answerActions.addLikeToAnswerAndUpdateQuestionAndAnswers.call, answerWorkers.addLikeToAnswerAndUpdateQuestionAndAnswersAsync);
 }
 
 function* watchAcceptAnswer() {
@@ -27,7 +27,7 @@ function* watchGetAnswersFromRequestedPosition() {
 
 export const answerWatchers: any[] = [
     watchAcceptAnswer(),
-    watchAddLike(),
+    watchAddLikeAndUpdateQuestionAndAnswers(),
     watchCreateAnswer(),
     watchGetQuestionAndAnswers(),
     watchGetAnswersFromRequestedPosition(),

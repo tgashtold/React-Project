@@ -1,100 +1,119 @@
-import Database from '../../../data/Database';
-import {IUpdatePersonalInfoArgs, IUser, IUserInfo, IUserInfoInDB, IUserLogInArgs} from './user.model';
-import {QuestionsApi} from '../questions';
+import {IUpdatePersonalInfoArgs, IUser, IUserLogInArgs} from './user.model';
+import {RouteService} from '../../services';
+import {QuestionService} from '../questions';
+import {UserService} from './';
 
 export class UserApi {
-    static getUserById(id: string): IUserInfoInDB {
-        return Database.users.find((user: IUserInfoInDB) => user.id === id);
+    static async getUserByEmailAndPassword(userInfo: IUserLogInArgs): Promise<any> {
+        try {
+            let response = await fetch(`http://localhost:5000/user/get/${userInfo.password}/${userInfo.email}`);
+
+            if (+response.status.toString().slice(0, 1) !== 2 && response.status !== 404) {
+                throw new Error('Error! Failed to log in. Please try again');
+            }
+
+            let result = await response.json();
+
+            if (result.statusCode === 404) {
+                throw new Error('');
+            }
+
+            result.user.questions = QuestionService.adoptQuestionsDates(result.user.questions);
+            UserService.addUserToLS(result.token);
+
+            return result.user;
+        } catch (error) {
+            throw new Error(error.message);
+        }
     }
 
-    static updateUser(user: IUserInfoInDB): IUserInfoInDB {
-        Database.users = Database.users.filter((userInDb: IUserInfoInDB) => user.id !== userInDb.id);
-        Database.users.push(user);
-        return user;
-    }
+    static async isAuthorized(): Promise<any> {
+        try {
+            let response = await fetch('http://localhost:5000/user/authorization', {
+                method: 'GET',
+                headers: {
+                    'x-access-token': localStorage.getItem('Authorization') || ''
+                },
+            });
 
-    static async changeUserPersonalInfo(changedUserInfo: IUpdatePersonalInfoArgs): Promise<any> {
-        const userInDb: IUserInfoInDB = this.getUserById(changedUserInfo.id);
-        const updatedUser: IUserInfoInDB = {...userInDb, personalData: changedUserInfo.personalData};
+            let result = await response.json();
 
-        this.updateUser(updatedUser);
+            if (result.user) {
+                result.user.questions = QuestionService.adoptQuestionsDates(result.user.questions);
+            }
 
-        return await {
-            ...updatedUser,
-            questions: QuestionsApi.getQuestionsByAuthorId(updatedUser.id)
-        };
-    }
-
-    static async increaseAnswersQtyInRating(userId: string): Promise<any> {
-        const userInDb: IUserInfoInDB = this.getUserById(userId);
-        userInDb.rating.answersTotal += 1;
-
-        return await {
-            ...this.updateUser(userInDb),
-            questions: QuestionsApi.getQuestionsByAuthorId(userId)
-        };
-    }
-
-    static async increaseQuestionsQtyInRating(userId: string): Promise<any> {
-        const userInDb: IUserInfoInDB = await this.getUserById(userId);
-        userInDb.rating.questionsTotal = userInDb.rating.questionsTotal + 1;
-        this.updateUser(userInDb);
-
-        return await {
-            ...userInDb,
-            questions: QuestionsApi.getQuestionsByAuthorId(userId)
-        };
+            return result;
+        } catch (error) {
+            throw new Error(error.message);
+        }
     }
 
     static async addUser(newUser: IUser): Promise<any> {
-        const isUserWithSamePasswordExist: boolean = Database.users.some(
-            (userInDb: IUserInfo) => userInDb.password === newUser.password
-        );
-        const isUserWithSameEmailExist: boolean = Database.users.some(
-            (userInDb: IUserInfo) => userInDb.personalData.email === newUser.personalData.email
-        );
+        try {
+            let response = await fetch('http://localhost:5000/user/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(newUser)
+            });
 
-        if (isUserWithSamePasswordExist) {
-            throw new Error('Please enter other password to provide reliability');
-        } else if (isUserWithSameEmailExist) {
-            throw new Error('The user with such e-mail already exists');
-        } else {
-            const user: IUserInfoInDB = {
-                id: Math.random().toString().slice(5, 15),
-                ...newUser,
-                rating: {
-                    questionsTotal: 0,
-                    answersTotal: 0,
-                    answersAcceptedByOthers: 0,
-                    answersLikedByOthers: 0
-                }
-            };
+            if (+response.status.toString().slice(0, 1) !== 2 && response.status !== 406) {
+                throw new Error('Error! Failed to create new user. Please try again');
+            }
 
-            await Database.users.push(user);
-            const resultUser: IUserInfo = {
-                ...user,
-                questions: QuestionsApi.getQuestionsByAuthorId(user.id)
-            };
+            let result = await response.json();
 
-            return resultUser;
+            if (result.statusCode) {
+                throw new Error(result.message);
+            }
+
+            result.user.questions = QuestionService.adoptQuestionsDates(result.user.questions);
+            UserService.addUserToLS(result.token);
+
+            return result.user;
+        } catch (error) {
+            throw new Error(error.message);
         }
     }
 
-    static async getUserByEmailAndPassword(userInfo: IUserLogInArgs): Promise<any> {
-        const user: IUserInfoInDB | undefined = Database.users.find(
-            (userInDb: IUserInfoInDB) =>
-                userInDb.password === userInfo.password && userInDb.personalData.email === userInfo.email
-        );
+    static async getUserById(userId: string): Promise<any> {
+        try {
+            let response = await fetch(`http://localhost:5000/user/get/${userId}`);
 
-        if (user) {
-            const userToReturn: IUserInfo = {
-                ...user,
-                questions: QuestionsApi.getQuestionsByAuthorId(user.id)
-            };
+            if (+response.status.toString().slice(0, 1) !== 2) {
+                throw new Error(`Error ${response.status}! Failed to find user ${userId}`);
+            }
 
-            return userToReturn;
+            const result = await response.json();
+
+            result.user.questions = QuestionService.adoptQuestionsDates(result.user.questions);
+            UserService.addUserToLS(result.token);
+
+            return result.user;
+        } catch (error) {
+            RouteService.redirectToErrorPage();
         }
+    }
 
-        throw new Error('No such user');
+    static async changeUserPersonalInfo(changedUserInfo: IUpdatePersonalInfoArgs): Promise<any> {
+        try {
+            const response = await fetch(`http://localhost:5000/user/update/${changedUserInfo.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'x-access-token': localStorage.getItem('Authorization') || ''
+                },
+                body: JSON.stringify(changedUserInfo.personalData)
+            });
+
+            let result = await response.json();
+
+            result.questions = QuestionService.adoptQuestionsDates(result.questions);
+
+            return result;
+        } catch (error) {
+            throw new Error('Unable to update. Please try again')
+        }
     }
 }

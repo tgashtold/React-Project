@@ -7,6 +7,7 @@ import {IAnswerInfo} from '../answer.model';
 import {IQuestionInfo} from '../../questions/question.model';
 
 interface IAnswerTemplateProps {
+    isQuestionClosed: boolean;
     answer: IAnswerInfo;
     user: IUserInfo | null;
     handleLikesClick: (answer: IAnswerInfo) => void;
@@ -31,7 +32,7 @@ export class AnswerTemplate extends React.Component<IAnswerTemplateProps, IAnswe
                 <p className="answer">{answer.text}</p>
                 <AnswerLikes disabled={this.props.disableLike} answer={answer}
                              handleLikesClick={() => this.props.handleLikesClick(this.props.answer)}/>
-                {this.props.user && UserService.isUserAndQuestionAuthorEqual(this.props.user, question) && !question.isClosed
+                {this.props.user && UserService.isUserAndQuestionAuthorEqual(this.props.user, question) && !this.props.isQuestionClosed
                     ? (
                         <Button
                             clickHandler={() => this.props.handleAcceptBtnClick(this.props.answer)}

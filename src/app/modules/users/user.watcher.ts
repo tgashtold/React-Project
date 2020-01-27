@@ -10,22 +10,27 @@ function* watchLogInUser() {
     yield takeEvery(userActions.logInUser.call, userWorkers.logInUserAsync);
 }
 
+function* watchLogOutUser() {
+    yield takeEvery(userActions.logOutUser.call, userWorkers.logOutUserAsync);
+}
+
 function* watchUpdateUserPersonalInfo() {
     yield takeEvery(userActions.updateUserPersonalInfo.call, userWorkers.updateUserPersonalInfoAsync);
 }
 
-function* watchIncreaseAnswersInUserRating() {
-    yield takeEvery(userActions.increaseAnswersQtyInUserRating.call, userWorkers.increaseAnswersQtyInUserRatingAsync);
+function* watchAuthorizationCheck() {
+    yield takeEvery(userActions.isUserAuthorized.call, userWorkers.isUserAuthorizedAsync);
 }
 
-function* watchIncreaseQuestionsInUserRating() {
-    yield takeEvery(userActions.increaseQuestionsQtyInUserRating.call, userWorkers.increaseQuestionsQtyInUserRatingAsync);
+function* watchGetUserById() {
+    yield takeEvery(userActions.getUserById.call, userWorkers.getUserByIdAsync);
 }
 
 export const userWatchers: any[] = [
     watchUpdateUserPersonalInfo(),
-    watchIncreaseAnswersInUserRating(),
-    watchIncreaseQuestionsInUserRating(),
     watchLogInUser(),
-    watchUserQuestion()
+    watchUserQuestion(),
+    watchGetUserById(),
+    watchAuthorizationCheck(),
+    watchLogOutUser()
 ];

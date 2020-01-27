@@ -6,6 +6,7 @@ import {IUserInfo} from '../../users/user.model';
 
 interface IAnswerFormProps {
     onSubmit: (newAnswer: IAnswer) => void;
+    error: string;
     clearForm?: boolean;
 }
 
@@ -78,6 +79,9 @@ export class AnswerForm extends React.Component<IAnswerFormProps, IAnswerFormSta
                             onChanged={this.textareaChangesHandler}
                         />
                     </InputLabelWrapper>
+                    {this.props.error.length>0
+                        ? <p className="error-message">{this.props.error}</p>
+                        : null}
                     <Button
                         disabled={this.state[this.textareaName]
                             ? !this.state[this.textareaName].isValid

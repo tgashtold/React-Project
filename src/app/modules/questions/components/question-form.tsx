@@ -5,6 +5,7 @@ import {IQuestion} from '../../questions/question.model';
 
 interface IQuestionFormProps {
     onSubmit: (question: IQuestion) => void;
+    serverError: string
 }
 
 interface IQuestionFormState {
@@ -97,7 +98,7 @@ export class QuestionForm extends React.Component<IQuestionFormProps, IQuestionF
                     <InputTags onChanged={this.textareaChangesHandler} name={this.textareaNames.topicTags} tags={[]}/>
                 </InputLabelWrapper>
 
-                <span className="error-message">{this.state.errorMessage}</span>
+                <span className="error-message">{this.state.errorMessage} {this.props.serverError}</span>
                 <Button clickHandler={this.handleBtnClick} buttonTitle={'Create'}/>
             </form>
         );
