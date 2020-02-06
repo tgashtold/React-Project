@@ -1,119 +1,138 @@
-import {IUpdatePersonalInfoArgs, IUser, IUserLogInArgs} from './user.model';
-import {RouteService} from '../../services';
-import {QuestionService} from '../questions';
-import {UserService} from './';
+import { IUpdatePersonalInfoArgs, IUser, IUserLogInArgs } from './user.model';
+import { RouteService } from '../../services';
+import { QuestionService } from '../questions';
 
 export class UserApi {
-    static async getUserByEmailAndPassword(userInfo: IUserLogInArgs): Promise<any> {
-        try {
-            let response = await fetch(`http://localhost:5000/user/get/${userInfo.password}/${userInfo.email}`);
+	static async getUserByEmailAndPassword(userInfo: IUserLogInArgs): Promise<any> {
+		try {
+			let response = await fetch(`http://localhost:5000/user/get/${userInfo.password}/${userInfo.email}`, {
+				method: 'GET',
+				credentials: 'include'
+			});
 
-            if (+response.status.toString().slice(0, 1) !== 2 && response.status !== 404) {
-                throw new Error('Error! Failed to log in. Please try again');
-            }
+			if (+response.status.toString().slice(0, 1) !== 2 && response.status !== 404) {
+				throw new Error('Error! Failed to log in. Please try again');
+			}
 
-            let result = await response.json();
+			let result = await response.json();
 
-            if (result.statusCode === 404) {
-                throw new Error('');
-            }
+			if (result.statusCode === 404) {
+				throw new Error('');
+			}
 
-            result.user.questions = QuestionService.adoptQuestionsDates(result.user.questions);
-            UserService.addUserToLS(result.token);
+			const user = result;
 
-            return result.user;
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    }
+			user.questions = QuestionService.adoptQuestionsDates(user.questions);
 
-    static async isAuthorized(): Promise<any> {
-        try {
-            let response = await fetch('http://localhost:5000/user/authorization', {
-                method: 'GET',
-                headers: {
-                    'x-access-token': localStorage.getItem('Authorization') || ''
-                },
-            });
+			return user;
+		} catch (error) {
+			throw new Error(error.message);
+		}
+	}
 
-            let result = await response.json();
+	static async isAuthorized(): Promise<any> {
+		try {
+			let response = await fetch('http://localhost:5000/user/authorization', {
+				method: 'GET',
 
-            if (result.user) {
-                result.user.questions = QuestionService.adoptQuestionsDates(result.user.questions);
-            }
+				credentials: 'include'
+			});
 
-            return result;
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    }
+			let result = await response.json();
 
-    static async addUser(newUser: IUser): Promise<any> {
-        try {
-            let response = await fetch('http://localhost:5000/user/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8'
-                },
-                body: JSON.stringify(newUser)
-            });
+			if (result.user) {
+				result.user.questions = QuestionService.adoptQuestionsDates(result.user.questions);
+			}
 
-            if (+response.status.toString().slice(0, 1) !== 2 && response.status !== 406) {
-                throw new Error('Error! Failed to create new user. Please try again');
-            }
+			return result;
+		} catch (error) {
+			throw new Error(error.message);
+		}
+	}
 
-            let result = await response.json();
+	static async addUser(newUser: IUser): Promise<any> {
+		try {
+			let response = await fetch('http://localhost:5000/user/create', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json;charset=utf-8'
+				},
+				credentials: 'include',
+				body: JSON.stringify(newUser)
+			});
 
-            if (result.statusCode) {
-                throw new Error(result.message);
-            }
+			if (+response.status.toString().slice(0, 1) !== 2 && response.status !== 406) {
+				throw new Error('Error! Failed to create new user. Please try again');
+			}
 
-            result.user.questions = QuestionService.adoptQuestionsDates(result.user.questions);
-            UserService.addUserToLS(result.token);
+			let result = await response.json();
 
-            return result.user;
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    }
+			if (result.statusCode) {
+				throw new Error(result.message);
+			}
 
-    static async getUserById(userId: string): Promise<any> {
-        try {
-            let response = await fetch(`http://localhost:5000/user/get/${userId}`);
+			const user = result;
+			user.questions = QuestionService.adoptQuestionsDates(user.questions);
 
-            if (+response.status.toString().slice(0, 1) !== 2) {
-                throw new Error(`Error ${response.status}! Failed to find user ${userId}`);
-            }
+			return user;
+		} catch (error) {
+			throw new Error(error.message);
+		}
+	}
 
-            const result = await response.json();
+	static async getUserById(userId: string): Promise<any> {
+		try {
+			let response = await fetch(`http://localhost:5000/user/get/${userId}`, {
+				credentials: 'include'
+			});
 
-            result.user.questions = QuestionService.adoptQuestionsDates(result.user.questions);
-            UserService.addUserToLS(result.token);
+			if (+response.status.toString().slice(0, 1) !== 2) {
+				throw new Error(`Error ${response.status}! Failed to find user ${userId}`);
+			}
 
-            return result.user;
-        } catch (error) {
-            RouteService.redirectToErrorPage();
-        }
-    }
+			const user = await response.json();
 
-    static async changeUserPersonalInfo(changedUserInfo: IUpdatePersonalInfoArgs): Promise<any> {
-        try {
-            const response = await fetch(`http://localhost:5000/user/update/${changedUserInfo.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8',
-                    'x-access-token': localStorage.getItem('Authorization') || ''
-                },
-                body: JSON.stringify(changedUserInfo.personalData)
-            });
+			user.questions = QuestionService.adoptQuestionsDates(user.questions);
 
-            let result = await response.json();
+			return user;
+		} catch (error) {
+			RouteService.redirectToErrorPage();
+		}
+	}
 
-            result.questions = QuestionService.adoptQuestionsDates(result.questions);
+	static async logOutUser(): Promise<any> {
+		try {
+			let response = await fetch(`http://localhost:5000/user/logout`, {
+				method: 'DELETE',
+				credentials: 'include'
+			});
 
-            return result;
-        } catch (error) {
-            throw new Error('Unable to update. Please try again')
-        }
-    }
+			if (+response.status.toString().slice(0, 1) !== 2) {
+				throw new Error('Log out problem');
+			}
+		} catch (error) {
+			RouteService.redirectToErrorPage();
+		}
+	}
+
+	static async changeUserPersonalInfo(changedUserInfo: IUpdatePersonalInfoArgs): Promise<any> {
+		try {
+			const response = await fetch(`http://localhost:5000/user/update/${changedUserInfo.id}`, {
+				method: 'PUT',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json;charset=utf-8'
+				},
+				body: JSON.stringify(changedUserInfo.personalData)
+			});
+
+			let result = await response.json();
+
+			result.questions = QuestionService.adoptQuestionsDates(result.questions);
+
+			return result;
+		} catch (error) {
+			throw new Error('Unable to update. Please try again');
+		}
+	}
 }

@@ -17,6 +17,7 @@ export class AnswerApi {
                     'x-access-token': localStorage.getItem('Authorization') || ''
                 },
                 body: JSON.stringify({id: answerId}),
+                credentials: 'include'
             });
 
             let result: IAcceptAnswerResponse = await response.json();
@@ -34,6 +35,7 @@ export class AnswerApi {
         try {
             const response = await fetch('http://localhost:5000/answer/addLike', {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
                     'x-access-token': localStorage.getItem('Authorization') || ''
@@ -55,6 +57,7 @@ export class AnswerApi {
         try {
             const response = await fetch('http://localhost:5000/answer/create', {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
                     'x-access-token': localStorage.getItem('Authorization') || ''
@@ -73,7 +76,9 @@ export class AnswerApi {
 
     static async getQuestionWithAnswersByQuestionId(requestData: IGetQuestionAndAswersArgs): Promise<any> {
         try {
-            const response = await fetch(`http://localhost:5000/answer/get/${requestData.questionId}/${requestData.answersCountPerPage}`);
+            const response = await fetch(`http://localhost:5000/answer/get/${requestData.questionId}/${requestData.answersCountPerPage}`,{
+                credentials: 'include'
+            });
 
             let result = await response.json();
             result.answers = AnswerService.adoptAnswersDate(result.answers);
@@ -86,7 +91,9 @@ export class AnswerApi {
 
     static async getAnswersFromRequestedPosition(requestData: IGetAswersFromPositionArgs): Promise<any> {
         try {
-            const response = await fetch(`http://localhost:5000/answer/get/${requestData.questionId}/${requestData.itemsCount}/${requestData.startNumber}`);
+            const response = await fetch(`http://localhost:5000/answer/get/${requestData.questionId}/${requestData.itemsCount}/${requestData.startNumber}`,{
+                credentials: 'include'
+            });
 
             let answers: IAnswerInfo[] = await response.json();
             answers = AnswerService.adoptAnswersDate(answers);

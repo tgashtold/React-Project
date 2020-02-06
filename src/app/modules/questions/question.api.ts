@@ -12,7 +12,8 @@ export class QuestionsApi {
                     'Content-Type': 'application/json;charset=utf-8',
                     'x-access-token': localStorage.getItem('Authorization') || ''
                 },
-                body: JSON.stringify(questionInfo)
+                body: JSON.stringify(questionInfo),
+                credentials: 'include'
             });
 
             if (+response.status.toString().slice(0, 1) !== 2) {
@@ -31,7 +32,9 @@ export class QuestionsApi {
 
     static async getActiveQuestions(): Promise<any> {
         try {
-            let response = await fetch(`http://localhost:5000/question/all`);
+            let response = await fetch(`http://localhost:5000/question/all`,{
+                credentials: 'include'
+            });
 
             let result = await response.json();
 
@@ -49,7 +52,9 @@ export class QuestionsApi {
 
     static async getQuestionsTags(): Promise<any> {
         try {
-            let response = await fetch(`http://localhost:5000/question/tags`);
+            let response = await fetch(`http://localhost:5000/question/tags`,{
+                credentials: 'include'
+            });
 
             let tags = await response.json();
 
@@ -61,7 +66,9 @@ export class QuestionsApi {
 
     static async getQuestionsByTag(tag: string): Promise<any> {
         try {
-            let response = await fetch(`http://localhost:5000/question/filtered/${tag}`);
+            let response = await fetch(`http://localhost:5000/question/filtered/${tag}`,{
+                credentials: 'include'
+            });
 
             let result = await response.json();
 
@@ -80,7 +87,9 @@ export class QuestionsApi {
     static async searchQuestionsByTitle(searchText: string): Promise<any> {
         try {
             if (searchText.trim().length > 0) {
-                let response = await fetch(`http://localhost:5000/question/search/${searchText}`);
+                let response = await fetch(`http://localhost:5000/question/search/${searchText}`,{
+                    credentials: 'include'
+                });
 
                 let result = await response.json();
 

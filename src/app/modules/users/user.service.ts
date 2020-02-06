@@ -7,14 +7,6 @@ export class UserService {
         return question.author.id === user.id;
     }
 
-    static removeUserFromLS(){
-        localStorage.removeItem('Authorization');
-    }
-
-    static addUserToLS(token:string){
-           localStorage.setItem('Authorization', token);
-    }
-
     static isUserAndAnswerAuthorEqual(user: IUserInfo, answer: IAnswerInfo): boolean {
         return answer.author.id === user.id;
     }

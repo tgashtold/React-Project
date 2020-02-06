@@ -5,7 +5,6 @@ import { UserApi } from './';
 import { call, put } from 'redux-saga/effects';
 import RoutesConfig from '../../config/Routes.config';
 import { push } from 'connected-react-router';
-import { UserService } from './user.service';
 
 const logInUserRequest = (payload: IUserLogInArgs) => UserApi.getUserByEmailAndPassword(payload);
 const logInUserAsync = createSagaWorker(logInUserRequest, userActions.logInUser);
@@ -32,7 +31,7 @@ function* isUserAuthorizedAsync(action: any) {
 function* logOutUserAsync(action: any) {
 	try {
 		yield put(userActions.logOutUser.request());
-		UserService.removeUserFromLS();
+		yield call(UserApi.logOutUser);
 		yield put(userActions.logOutUser.success());
 	} catch (error) {
 		yield put(userActions.logOutUser.error(error.message));
