@@ -3,29 +3,19 @@ import {
     IAnswer,
     IGetAswersFromPositionArgs,
     IGetQuestionAndAswersArgs,
-    IAcceptAnswerResponse, IAnswerInfo
 } from './answer.model';
-import {AnswerService} from './answer.service'
+import {AnswerService} from './answer.service';
+import {api} from '../common';
 
 export class AnswerApi {
     static async acceptAnswerByIdAndUpdateQuestion(answerId: string): Promise<any> {
         try {
-            const response = await fetch('http://localhost:5000/answer/accept', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8',
-                    'x-access-token': localStorage.getItem('Authorization') || ''
-                },
-                body: JSON.stringify({id: answerId}),
-                credentials: 'include'
-            });
+            const response = await api.post('answer/accept', {id: answerId});
 
-            let result: IAcceptAnswerResponse = await response.json();
+            response.data.currentQuestion.creationDate = new Date(response.data.currentQuestion.creationDate);
+            response.data.updatedAnswer.creationDate = new Date(response.data.updatedAnswer.creationDate);
 
-            result.currentQuestion.creationDate = new Date(result.currentQuestion.creationDate);
-            result.updatedAnswer.creationDate = new Date(result.updatedAnswer.creationDate);
-
-            return result;
+            return response.data;
         } catch (error) {
             throw new Error('Error! Unable to accept answer. Please try again');
         }
@@ -33,21 +23,12 @@ export class AnswerApi {
 
     static async addLikeToAnswerAndUpdateQuestionAndAnswers(args: IAddLikeArgs): Promise<any> {
         try {
-            const response = await fetch('http://localhost:5000/answer/addLike', {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8',
-                    'x-access-token': localStorage.getItem('Authorization') || ''
-                },
-                body: JSON.stringify(args)
-            });
+            const response = await api.post('answer/addLike', args);
 
-            let result = await response.json();
-            result.currentQuestion.creationDate = new Date(result.currentQuestion.creationDate);
-            result.answers = AnswerService.adoptAnswersDate(result.answers);
+            response.data.currentQuestion.creationDate = new Date(response.data.currentQuestion.creationDate);
+            response.data.answers = AnswerService.adoptAnswersDate(response.data.answers);
 
-            return result;
+            return response.data;
         } catch (error) {
             throw new Error('Error! Unable to add like. Please try again');
         }
@@ -55,20 +36,11 @@ export class AnswerApi {
 
     static async addAnswer(answer: IAnswer): Promise<any> {
         try {
-            const response = await fetch('http://localhost:5000/answer/create', {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8',
-                    'x-access-token': localStorage.getItem('Authorization') || ''
-                },
-                body: JSON.stringify(answer)
-            });
+            const response = await api.post('answer/create', answer);
 
-            let newAnswer = await response.json();
-            newAnswer.creationDate = new Date(newAnswer.creationDate);
+            response.data.creationDate = new Date(response.data.creationDate);
 
-            return newAnswer;
+            return response.data;
         } catch (error) {
             throw new Error('Error! Unable to create answer.');
         }
@@ -76,29 +48,25 @@ export class AnswerApi {
 
     static async getQuestionWithAnswersByQuestionId(requestData: IGetQuestionAndAswersArgs): Promise<any> {
         try {
-            const response = await fetch(`http://localhost:5000/answer/get/${requestData.questionId}/${requestData.answersCountPerPage}`,{
-                credentials: 'include'
-            });
+            const response = await api.get(`answer/get/${requestData.questionId}/${requestData.answersCountPerPage}`);
 
-            let result = await response.json();
-            result.answers = AnswerService.adoptAnswersDate(result.answers);
+            response.data.answers = AnswerService.adoptAnswersDate(response.data.answers);
 
-            return result;
+            return response.data;
         } catch (error) {
-            throw new Error(error.message)
+            throw new Error('Falied to load answers. Please reload the page.');
         }
     }
 
     static async getAnswersFromRequestedPosition(requestData: IGetAswersFromPositionArgs): Promise<any> {
         try {
-            const response = await fetch(`http://localhost:5000/answer/get/${requestData.questionId}/${requestData.itemsCount}/${requestData.startNumber}`,{
-                credentials: 'include'
-            });
+            const response = await api.get(
+                `answer/get/${requestData.questionId}/${requestData.itemsCount}/${requestData.startNumber}`
+            );
 
-            let answers: IAnswerInfo[] = await response.json();
-            answers = AnswerService.adoptAnswersDate(answers);
+            response.data = AnswerService.adoptAnswersDate(response.data);
 
-            return answers;
+            return response.data;
         } catch (error) {
             throw new Error('Error! Unable to load answers');
         }

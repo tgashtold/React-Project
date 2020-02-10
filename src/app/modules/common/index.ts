@@ -18,3 +18,4 @@ export {Menu} from './components/header/menu';
 export * from './interfaces/IChangedEventArgs';
 export {Pagination} from './components/pagination';
 export {SearchFrom} from './components/forms/search-form';
+export {api} from './common.api';
