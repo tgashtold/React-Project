@@ -49,7 +49,7 @@ class QuestionsList extends React.Component<RouteComponentProps<IQuestionsParams
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const searchedTag: string | undefined = this.props.match.params.tag;
         const searchedText: string | undefined = this.props.location.search;
 

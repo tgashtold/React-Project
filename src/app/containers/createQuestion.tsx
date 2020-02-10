@@ -29,7 +29,7 @@ interface ICreateQuestionState {
 }
 
 class CreateQuestion extends React.Component<ICreateQuestionProps, ICreateQuestionState> {
-    componentWillMount() {
+    componentDidMount() {
         this.props.isAuthorized();
     }
 

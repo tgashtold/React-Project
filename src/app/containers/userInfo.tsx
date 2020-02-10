@@ -39,7 +39,7 @@ class UserInfo extends React.Component<RouteComponentProps<IUserInfoParams> & IU
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.isAuthorized();
     }
 

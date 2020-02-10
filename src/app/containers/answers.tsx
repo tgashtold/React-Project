@@ -60,7 +60,7 @@ class Answers extends React.Component<RouteComponentProps<IAnswersParams> & IAns
         this.state = {activeTag: ''}
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.getQuestionAndAnswers({
             questionId: this.props.match.params.id,
             answersCountPerPage: this.answersQtyPerPage
